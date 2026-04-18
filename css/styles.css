@@ -916,3 +916,27 @@ section { padding: clamp(4rem, 8vw, 8rem) 0; }
   border-bottom: 1px solid var(--border);
 }
 .nav-open .nav-links a { font-size: 1rem; }
+
+/* Mobile nav dropdown — inline sub-items, no absolute positioning */
+.nav-open .has-dropdown { position: static; }
+.nav-open .nav-dropdown {
+  position: static !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-left: 2px solid rgba(201,168,76,0.3) !important;
+  padding: 0.5rem 0 0.2rem 1.2rem !important;
+  margin-top: 0.2rem !important;
+  min-width: auto !important;
+  box-shadow: none !important;
+}
+.nav-open .nav-dropdown li { margin: 0; }
+.nav-open .nav-dropdown a {
+  font-size: 0.85rem !important;
+  padding: 0.35rem 0 !important;
+  letter-spacing: 0.08em !important;
+  color: var(--muted) !important;
+}
