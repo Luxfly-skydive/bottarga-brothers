@@ -85,7 +85,10 @@ p.large { font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--cream); }
   height: var(--nav-h);
   display: flex;
   align-items: center;
-  transition: background 0.4s, backdrop-filter 0.4s;
+  background: rgba(14,12,9,0.65);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s;
 }
 .nav.scrolled {
   background: rgba(14,12,9,0.95);
