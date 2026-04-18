@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Cancelled — Bottarga Brothers</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .cancel-section { background:var(--black); min-height:80vh; display:flex; align-items:center; justify-content:center; padding:4rem 1rem; }
+    .cancel-card { background:var(--dark-mid); border:1px solid var(--border); max-width:520px; width:100%; text-align:center; padding:3rem 2.5rem; }
+    .cancel-icon { font-size:3rem; margin-bottom:1.2rem; }
+    .cancel-card h1 { font-size:1.8rem; color:var(--cream); margin-bottom:0.8rem; }
+    .cancel-card p { color:var(--muted); font-size:0.88rem; line-height:1.8; margin-bottom:1.5rem; }
+    .cancel-card .btn { display:inline-block; margin:0.4rem; }
+  </style>
+</head>
+<body>
+<nav class="nav scrolled" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bottarga Brothers<span>Supreme Bottarga™</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li class="has-dropdown"><a href="shop.html">Shop ▾</a>
+        <ul class="nav-dropdown">
+          <li><a href="shop-usa.html">🇺🇸 USA Orders</a></li>
+          <li><a href="shop-canada.html">🇨🇦 Canada Orders</a></li>
+        </ul>
+      </li>
+      <li><a href="what-is.html">What Is Bottarga?</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="shop-usa.html" class="nav-cta">Shop Now</a></li>
+    </ul>
+    <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div class="cancel-section">
+  <div class="cancel-card">
+    <div class="cancel-icon">↩️</div>
+    <h1>Order Cancelled</h1>
+    <div class="divider"></div>
+    <p>No worries — your cart is still saved. Head back to the shop whenever you're ready.</p>
+    <p style="font-size:0.78rem; color:var(--muted);">Need help choosing? Call <a href="tel:18446232767" style="color:var(--gold);">1-844-MAD-BROS</a> and we'll help you pick the right bottarga.</p>
+    <a href="shop-usa.html" class="btn btn-gold">Back to Shop</a>
+    <a href="contact.html" class="btn btn-outline">Contact Us</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom"><p>© 2026 Bottarga Brothers LLC. All rights reserved.</p></div>
+  </div>
+</footer>
+<script>
+  document.getElementById('navToggle').addEventListener('click', () => document.body.classList.toggle('nav-open'));
+  document.querySelectorAll('.has-dropdown > a').forEach(a => {
+    a.addEventListener('click', function(e) {
+      if (window.innerWidth < 900) { e.preventDefault(); this.closest('.has-dropdown').classList.toggle('open'); }
+    });
+  });
+</script>
+<script src="js/cart.js"></script>
+</body>
+</html>

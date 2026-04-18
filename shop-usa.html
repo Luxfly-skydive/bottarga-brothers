@@ -71,7 +71,7 @@
     <div class="product-grid" id="productGrid">
 
       <!-- 1. Sardinian Gold -->
-      <div class="product-card fade-up" data-type="whole" id="sardinia">
+      <div class="product-card fade-up" data-type="whole" id="sardinia" data-product="sardinian-gold">
         <div class="product-badge" style="background:var(--gold-dim); color:var(--cream);">On Sale</div>
         <img class="product-img" src="img/sardinian_40off.jpg" alt="Sardinian Gold Bottarga">
         <div class="product-info">
@@ -86,15 +86,20 @@
               <span style="color:var(--muted);">XL — 5.6 oz (160g)</span><span style="color:var(--cream); text-align:right;">$42.99</span>
             </div>
           </div>
+          <select id="sg-size" class="bb-size-select">
+            <option value="price_1TNOZyPnG7UtHDWeAuJDmAZ3">M — 4.9 oz (138g) — $38.99</option>
+            <option value="price_1TNOa1PnG7UtHDWeHUYgHYKQ">L — 5.3 oz (150g) — $41.99</option>
+            <option value="price_1TNOaCPnG7UtHDWei9RS1166">XL — 5.6 oz (160g) — $42.99</option>
+          </select>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
             <div class="product-price"><span class="from">From</span>$38.99</div>
-            <a href="https://bottargabrothers.com/order-bottarga/usa/11-type/11-sardenian-gold" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <button class="bb-atc-btn" data-atc-product="sardinian-gold" onclick="window._bbCart&&window._bbCart.add('sardinian-gold',document.getElementById('sg-size').value)">Add to Cart</button>
           </div>
         </div>
       </div>
 
       <!-- 2. Boutargue Classique -->
-      <div class="product-card fade-up fade-up-delay-1" data-type="waxed whole" id="france">
+      <div class="product-card fade-up fade-up-delay-1" data-type="waxed whole" id="france" data-product="boutargue-classique">
         <img class="product-img" src="img/bout_class_square.jpg" alt="Boutargue Classique — Traditional Waxed French Bottarga">
         <div class="product-info">
           <div class="product-origin">🇫🇷 France — Traditional Waxed</div>
@@ -112,15 +117,24 @@
               <span style="color:var(--muted);">Giant — 13.0 oz</span><span style="color:var(--cream); text-align:right;">$91.99</span>
             </div>
           </div>
+          <select id="bc-size" class="bb-size-select">
+            <option value="price_1TNOaKPnG7UtHDWeV3VUEg9c">S — 3.7 oz — $33.99</option>
+            <option value="price_1TNOaNPnG7UtHDWeuwRK2Lht">M — 4.4 oz — $45.99</option>
+            <option value="price_1TNOaQPnG7UtHDWeQmTmyYG2">L — 6.0 oz — $47.99</option>
+            <option value="price_1TNOaUPnG7UtHDWePfhyYmtJ">XL — 6.2 oz — $49.99</option>
+            <option value="price_1TNOaZPnG7UtHDWekdPixmu9">Jumbo — 7.7 oz — $58.99</option>
+            <option value="price_1TNOacPnG7UtHDWe9oHxRUA2">Mega — 8.5 oz — $62.99</option>
+            <option value="price_1TNOafPnG7UtHDWeYVx3dNrQ">Giant — 13.0 oz — $91.99</option>
+          </select>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
             <div class="product-price"><span class="from">From</span>$33.99</div>
-            <a href="https://bottargabrothers.com/order-bottarga/usa/11-type/9-french-boutargue" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <button class="bb-atc-btn" data-atc-product="boutargue-classique" onclick="window._bbCart&&window._bbCart.add('boutargue-classique',document.getElementById('bc-size').value)">Add to Cart</button>
           </div>
         </div>
       </div>
 
       <!-- 3. Boutargue Impériale -->
-      <div class="product-card fade-up fade-up-delay-2" data-type="whole" id="imperiale">
+      <div class="product-card fade-up fade-up-delay-2" data-type="whole" id="imperiale" data-product="boutargue-imperiale">
         <img class="product-img" src="img/imperiale_square.jpg" alt="Boutargue Impériale — Premium French Bottarga">
         <div class="product-info">
           <div class="product-origin">🇫🇷 France — Premium Grade</div>
@@ -135,9 +149,15 @@
               <span style="color:var(--muted);">L — ~6.4 oz</span><span style="color:var(--cream); text-align:right;">$51.99</span>
             </div>
           </div>
+          <select id="bi-size" class="bb-size-select">
+            <option value="price_1TNOaoPnG7UtHDWeFmu9uCvf">XS — ~3.2 oz — $30.99</option>
+            <option value="price_1TNOauPnG7UtHDWeLGWVZ4Kq">S — ~3.5 oz — $32.99</option>
+            <option value="price_1TNOaxPnG7UtHDWebqUDLzFj">M — ~6.1 oz — $49.99</option>
+            <option value="price_1TNOb1PnG7UtHDWeHD8CY1rY">L — ~6.4 oz — $51.99</option>
+          </select>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
             <div class="product-price"><span class="from">From</span>$30.99</div>
-            <a href="https://bottargabrothers.com/order-bottarga/usa/11-type/32-boutargue-imperiale" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <button class="bb-atc-btn" data-atc-product="boutargue-imperiale" onclick="window._bbCart&&window._bbCart.add('boutargue-imperiale',document.getElementById('bi-size').value)">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -158,7 +178,7 @@
       </div>
 
       <!-- 5. Greek Avgotaraho -->
-      <div class="product-card fade-up fade-up-delay-1" data-type="waxed whole" id="greece">
+      <div class="product-card fade-up fade-up-delay-1" data-type="waxed whole" id="greece" data-product="greek-avgotaraho">
         <img class="product-img" src="img/greek_avgotaraho.jpg" alt="Greek Avgotaraho — Caviar of the Mediterranean">
         <div class="product-info">
           <div class="product-origin">🇬🇷 Greece — Athens</div>
@@ -174,23 +194,30 @@
               <span style="color:var(--muted);">Mega — ~7.4 oz</span><span style="color:var(--cream); text-align:right;">$55.99</span>
             </div>
           </div>
+          <select id="ga-size" class="bb-size-select">
+            <option value="price_1TNOb8PnG7UtHDWeyv82gxhs">S — ~5.6 oz — $44.99</option>
+            <option value="price_1TNObDPnG7UtHDWesuTGsqZM">M — ~5.8 oz — $45.99</option>
+            <option value="price_1TNObGPnG7UtHDWeZuGYEjkG">L — ~6.3 oz — $48.99</option>
+            <option value="price_1TNObJPnG7UtHDWeq5hsjZ2C">XL — ~6.6 oz — $50.99</option>
+            <option value="price_1TNObOPnG7UtHDWeVUiEXUbm">Mega — ~7.4 oz — $55.99</option>
+          </select>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
             <div class="product-price"><span class="from">From</span>$44.99</div>
-            <a href="https://bottargabrothers.com/11-type/53-greek-avgotaraho-2" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <button class="bb-atc-btn" data-atc-product="greek-avgotaraho" onclick="window._bbCart&&window._bbCart.add('greek-avgotaraho',document.getElementById('ga-size').value)">Add to Cart</button>
           </div>
         </div>
       </div>
 
       <!-- 6. Ouro do Brasil -->
-      <div class="product-card fade-up fade-up-delay-2" data-type="whole" id="brazil">
+      <div class="product-card fade-up fade-up-delay-2" data-type="whole" id="brazil" data-product="ouro-do-brasil">
         <img class="product-img" src="img/1_brazilian_bottarga-copy-1.jpg" alt="Ouro do Brasil — Brazilian Bottarga">
         <div class="product-info">
           <div class="product-origin">🇧🇷 Brazil — Santa Catarina</div>
           <div class="product-name">Ouro do Brasil</div>
           <p class="product-desc">Wild-caught Grey Mullet from the crystalline sea of Santa Catarina, Southern Brazil. Traditional salt-curing and dehydration — just two ingredients. Medium hard texture, ideal for grating, slicing, or shaving. HACCP certified, FDA approved, rich in Omega-3. The sweetest, mildest variety — the perfect introduction to bottarga.</p>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem;">
-            <div class="product-price"><span class="from">From</span>$22.99</div>
-            <a href="https://bottargabrothers.com/order-bottarga/usa" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <div class="product-price">$22.99</div>
+            <button class="bb-atc-btn" data-atc-product="ouro-do-brasil" onclick="window._bbCart&&window._bbCart.add('ouro-do-brasil','price_1TNObWPnG7UtHDWewoPmKPpU')">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -226,7 +253,7 @@
       </div>
 
       <!-- 9. Grated Gold -->
-      <div class="product-card fade-up fade-up-delay-2" data-type="grated" id="grated">
+      <div class="product-card fade-up fade-up-delay-2" data-type="grated" id="grated" data-product="grated-gold">
         <img class="product-img" src="img/cropped-whole_grated_bottarga-scaled-2.jpg" alt="Grated Gold — Sardinian Grated Bottarga">
         <div class="product-info">
           <div class="product-origin">🇮🇹 Sardinia — Grated</div>
@@ -240,9 +267,14 @@
               <span style="color:var(--muted);">3 jars</span><span style="color:var(--cream); text-align:right;">$50.99</span>
             </div>
           </div>
+          <select id="gg-size" class="bb-size-select">
+            <option value="price_1TNObfPnG7UtHDWeWcqHE9Tc">1 jar — 40g — $19.99</option>
+            <option value="price_1TNObiPnG7UtHDWeF1wfWLdd">2 jars — 80g — $35.99</option>
+            <option value="price_1TNObmPnG7UtHDWekiBG9rPF">3 jars — 120g — $50.99</option>
+          </select>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
             <div class="product-price"><span class="from">From</span>$19.99</div>
-            <a href="https://bottargabrothers.com/11-type/36-grated-gold" target="_blank" class="btn btn-gold" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Order</a>
+            <button class="bb-atc-btn" data-atc-product="grated-gold" onclick="window._bbCart&&window._bbCart.add('grated-gold',document.getElementById('gg-size').value)">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -373,6 +405,7 @@
     if (!e.target.closest('.has-dropdown')) document.querySelectorAll('.has-dropdown').forEach(d => d.classList.remove('open'));
   });
 </script>
+<script src="js/cart.js"></script>
 <script src="js/chatbot.js"></script>
 </body>
 </html>
