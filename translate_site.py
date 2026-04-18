@@ -244,14 +244,30 @@ def translate_file(html_file, lang, lc, out_dir):
     # Update language switcher
     update_switcher_subdir(soup, filename, lang)
 
-    # Restore brand name in nav-logo (never translate "Zoomy.services")
+    # Restore brand name in nav-logo — always preserve exact original text
+    BRAND_NAME = 'Bottarga Brothers'
     for logo in soup.find_all('a', class_='nav-logo'):
-        for child in logo.children:
+        for child in list(logo.children):
             if isinstance(child, NavigableString):
-                text = str(child).strip()
-                # Restore if it looks like a translation of "services"
-                if text and text not in ('Zoomy', ''):
-                    child.replace_with(NavigableString('services'))
+                stripped = str(child).strip()
+                if stripped:  # any non-empty text node → restore to brand name
+                    child.replace_with(NavigableString('\n      ' + BRAND_NAME + '\n      '))
+                    break  # only restore the first text node
+        # Fix logo href — in subdirectory, must point to ../index.html not index.html
+        if logo.get('href') == 'index.html':
+            logo['href'] = '../index.html'
+
+    # Inject nav overflow fix — French/other lang items are longer than English
+    # This prevents the nav from wrapping to a second row and showing weird lines
+    head = soup.find('head')
+    if head:
+        nav_style = soup.new_tag('style')
+        nav_style.string = (
+            '.nav-links{gap:0.6rem!important}'
+            '.nav-links a{font-size:0.68rem!important;letter-spacing:0.04em!important;white-space:nowrap!important}'
+            '.nav-cta{font-size:0.65rem!important;padding:0.5rem 0.9rem!important;letter-spacing:0.1em!important;white-space:nowrap!important}'
+        )
+        head.append(nav_style)
 
     # Inject localStorage lang-setter so chatbot detects correct language
     head = soup.find('head')
@@ -267,7 +283,7 @@ def translate_file(html_file, lang, lc, out_dir):
 
     # Write
     os.makedirs(out_dir, exist_ok=True)
-    out = '<!DOCTYPE html>\n' + re.sub(r'^\s*html\s*\n','', str(soup))
+    out = '<!DOCTYPE html>\n' + re.sub(r'^(\s*html\s*\n)+','', str(soup))
     with open(os.path.join(out_dir, filename),'w',encoding='utf-8') as f:
         f.write(out)
 
@@ -279,7 +295,7 @@ def update_root_pages(html_files):
             content = f.read()
         soup = BeautifulSoup(content,'html.parser')
         update_switcher_root(soup, filename)
-        out = '<!DOCTYPE html>\n' + re.sub(r'^\s*html\s*\n','', str(soup))
+        out = '<!DOCTYPE html>\n' + re.sub(r'^(\s*html\s*\n)+','', str(soup))
         with open(path,'w',encoding='utf-8') as f:
             f.write(out)
 
