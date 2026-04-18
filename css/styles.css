@@ -466,6 +466,24 @@ section { padding: clamp(4rem, 8vw, 8rem) 0; }
   display: block;
   min-width: 0; /* prevent grid blowout */
 }
+.kosher-badge {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.35);
+  background: rgba(201,168,76,0.06);
+  padding: 0.3rem 0.7rem;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.kosher-badge:hover {
+  background: rgba(201,168,76,0.14);
+  border-color: var(--gold);
+}
+
 .product-img-placeholder {
   width: 100%;
   aspect-ratio: 4/3;
