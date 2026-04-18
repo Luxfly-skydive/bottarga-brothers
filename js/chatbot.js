@@ -575,7 +575,8 @@
     const sendBtn = document.getElementById('bb-chat-send');
     const closeBtn = document.getElementById('bb-chat-close');
     let isOpen = false;
-    let hasGreeted = false;
+    // Persist greeting state across page navigation within same session
+    let hasGreeted = sessionStorage.getItem('bb_greeted') === '1';
 
     function addMsg(text, role) {
       const div = document.createElement('div');
@@ -649,6 +650,7 @@
       removeBubble();
       if (!hasGreeted) {
         hasGreeted = true;
+        sessionStorage.setItem('bb_greeted', '1');
         setTimeout(() => {
           addMsg(`Welcome to **Bottarga Brothers** 🐟\n\nI can help you find the perfect bottarga — from Sardinia, France, Greece, Brazil, or Egypt. Ask me anything about our products, how to use them, or how to order!\n\nFree US shipping on every order. 📦`, 'bot');
         }, 220);
@@ -678,9 +680,12 @@
       input.style.height = Math.min(input.scrollHeight, 100) + 'px';
     });
 
-    // Attention bubble
+    // Attention bubble — only on first page of session, not when nav is open
     setTimeout(() => {
       if (isOpen) return;
+      if (document.body.classList.contains('nav-open')) return;
+      if (sessionStorage.getItem('bb_bubble_shown')) return;
+      sessionStorage.setItem('bb_bubble_shown', '1');
       const bubble = document.createElement('div');
       bubble.id = 'bb-chat-bubble';
       bubble.textContent = 'Questions about bottarga? Ask me! 🐟';

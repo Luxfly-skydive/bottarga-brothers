@@ -935,9 +935,9 @@ body.nav-open { overflow: hidden; }
 .nav-open .nav-links > li { border-bottom: 1px solid var(--border); }
 .nav-open .nav-links a { font-size: 1.05rem; padding: 1rem 0; display: block; }
 
-/* Mobile nav dropdown — auto-expanded, no click needed */
+/* Mobile nav dropdown — click to expand (tap "Shop ▾" to reveal sub-items) */
 .nav-open .has-dropdown { position: static; }
-.nav-open .nav-dropdown {
+.nav-open .has-dropdown.open .nav-dropdown {
   display: block !important;
   position: static !important;
   transform: none !important;
@@ -957,3 +957,8 @@ body.nav-open { overflow: hidden; }
   color: var(--muted) !important;
   border-bottom: none !important;
 }
+
+/* Hide chatbot button, bubble and window when mobile nav is open */
+body.nav-open #bb-chat-btn,
+body.nav-open #bb-chat-bubble,
+body.nav-open #bb-chat-window { display: none !important; }
