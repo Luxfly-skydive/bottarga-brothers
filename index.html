@@ -18,7 +18,13 @@
     </a>
     <ul class="nav-links">
       <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="shop.html">Shop</a></li>
+      <li class="has-dropdown">
+        <a href="shop.html">Shop ▾</a>
+        <ul class="nav-dropdown">
+          <li><a href="shop-usa.html">🇺🇸 USA Orders</a></li>
+          <li><a href="shop-canada.html">🇨🇦 Canada Orders</a></li>
+        </ul>
+      </li>
       <li><a href="what-is.html">What Is Bottarga?</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="recipes.html">Recipes</a></li>
@@ -401,6 +407,16 @@
   const toggle = document.getElementById('navToggle');
   toggle.addEventListener('click', () => {
     document.body.classList.toggle('nav-open');
+  });
+
+  // Mobile dropdown toggle
+  document.querySelectorAll('.has-dropdown > a').forEach(a => {
+    a.addEventListener('click', function(e) {
+      if (window.innerWidth < 900) { e.preventDefault(); this.closest('.has-dropdown').classList.toggle('open'); }
+    });
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.has-dropdown')) document.querySelectorAll('.has-dropdown').forEach(d => d.classList.remove('open'));
   });
 
   // Fade-up on scroll
