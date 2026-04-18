@@ -171,7 +171,7 @@
       kw: ['kosher','kasher','passover','pesach','kosher certified','grand rabbinat','paris kosher','halal','jewish','certified'],
       r: () => {
         ctx.lastEntry = 'kosher';
-        return `**Kosher Options 🕍**\n\nOur **Boutargue Classique** (French bottarga) is **certified Kosher for Passover** — certified by the Grand-Rabbinat de Paris.\n\nThis is one of the few bottargas in the world with this certification. It's particularly popular in the Jewish community during Passover when many other fish products aren't available.\n\n• Available in 7 sizes from 3.7 oz to 13 oz\n• Prices from **$33.99** to **$91.99**\n\n[Order →](${BIZ.contact}) or call **${BIZ.phone}**`;
+        return `**Kosher Certified Bottarga 🕍**\n\nThree of our products carry full kosher certification:\n\n🇮🇹 **Sardinian Gold** — Certified Kosher by the **Officio Rabbinico, Comunità Ebraica di Roma** (Rabbinical Office of Rome). From $38.99.\n\n🇫🇷 **Boutargue Classique** — Certified **Kosher for Passover — Pareve** by the **Grand-Rabbinat de Paris / Beth'Din de Paris**. One of the few waxed bottargas in the world with this distinction. From $33.99.\n\n🇫🇷 **Boutargue Impériale** — Also certified **Kosher for Passover — Pareve** by the Grand-Rabbinat de Paris. Unwaxed, easier to grate. From $30.99.\n\nAll three are all-natural, no preservatives, just fish roe and salt.\n\n[Full kosher details →](kosher.html) or call **${BIZ.phone}**`;
       }
     },
 
@@ -328,7 +328,7 @@
         return `**Boutargue Classique Sizes:**\n\n• **S — 3.7 oz → $33.99** ← best intro size\n• M — 4.4 oz → $45.99\n• L — 6.0 oz → $47.99\n• XL — 6.2 oz → $49.99\n• Jumbo — 7.7 oz → $58.99\n• Mega — 8.5 oz → $62.99\n• **Giant — 13.0 oz → $91.99** ← best value if you know you love it\n\nFor a first purchase, I'd recommend the **S or M**. [Order →](${BIZ.contact})`;
       }
       if (anyKw(n, ['kosher','passover','kasher'])) {
-        return `Yes — **Boutargue Classique is certified Kosher for Passover** by the Grand-Rabbinat de Paris. All sizes are certified. [Order →](${BIZ.contact})`;
+        return `Yes — three products are kosher certified: **Sardinian Gold** (Officio Rabbinico di Roma), **Boutargue Classique** and **Boutargue Impériale** (both Kosher for Passover — Pareve, Grand-Rabbinat de Paris). [Full details →](kosher.html)`;
       }
       return null;
     },
