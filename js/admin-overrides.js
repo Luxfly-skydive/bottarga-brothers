@@ -113,6 +113,73 @@
     addr_ca:               '.addr-ca',
     contact_email:         '.contact-email',
 
+    // ── Shop Hub (shop.html) ─────────────────────────────────────
+    shop_hub_h1:           '.shop-hub-h1',
+    shop_hub_intro:        '.shop-hub-intro',
+    shop_hub_note:         '.shop-hub-note',
+    shop_usa_sec_h2:       '.shop-usa-sec-h2',
+    shop_usa_sec_desc:     '.shop-usa-sec-desc',
+    shop_ca_sec_h2:        '.shop-ca-sec-h2',
+    shop_ca_sec_desc:      '.shop-ca-sec-desc',
+    shop_intl_p:           '.shop-intl-p',
+
+    // ── Shop USA (shop-usa.html) ──────────────────────────────────
+    shopusa_h1:            '.shopusa-h1',
+    shopusa_intro:         '.shopusa-intro',
+    shopusa_shipping:      '.shopusa-shipping',
+    shopusa_grid_h2:       '.shopusa-grid-h2',
+
+    // ── Shop Canada (shop-canada.html) ───────────────────────────
+    shopca_h1:             '.shopca-h1',
+    shopca_intro:          '.shopca-intro',
+    shopca_shipping:       '.shopca-shipping',
+
+    // ── What Is Bottarga Page (what-is.html) ─────────────────────
+    whatis_h1:             '.whatis-h1',
+    whatis_intro:          '.whatis-intro',
+    whatis_s1_h2:          '.whatis-s1-h2',
+    whatis_p1:             '.whatis-p1',
+    whatis_p2:             '.whatis-p2',
+    whatis_p3:             '.whatis-p3',
+    whatis_p4:             '.whatis-p4',
+    whatis_ingredients_note: '.whatis-ingredients-note',
+    whatis_history_h2:     '.whatis-history-h2',
+    whatis_phoen_h3:       '.whatis-phoen-h3',
+    whatis_egypt_h3:       '.whatis-egypt-h3',
+    whatis_lit_h3:         '.whatis-lit-h3',
+    whatis_global_h3:      '.whatis-global-h3',
+    whatis_howto_h2:       '.whatis-howto-h2',
+    whatis_howto_intro:    '.whatis-howto-intro',
+
+    // ── Recipes Page (recipes.html) ───────────────────────────────
+    recipes_h1:            '.recipes-h1',
+    recipes_intro:         '.recipes-intro',
+    recipes_feature:       '.recipes-feature',
+    recipes_submit_h3:     '.recipes-submit-h3',
+    recipes_submit_p:      '.recipes-submit-p',
+    recipes_tips_h2:       '.recipes-tips-h2',
+
+    // ── Kosher Page (kosher.html) ─────────────────────────────────
+    kosher_h1:             '.kosher-h1',
+    kosher_intro:          '.kosher-intro',
+    kosher_body:           '.kosher-body',
+    kosher_certs_intro:    '.kosher-certs-intro',
+    kosher_sg_h3:          '.kosher-sg-h3',
+    kosher_sg_p:           '.kosher-sg-p',
+    kosher_bc_h3:          '.kosher-bc-h3',
+    kosher_bc_p:           '.kosher-bc-p',
+    kosher_bi_h3:          '.kosher-bi-h3',
+    kosher_bi_p:           '.kosher-bi-p',
+    kosher_std_h3:         '.kosher-std-h3',
+    kosher_pfp_h3:         '.kosher-pfp-h3',
+
+    // ── Contact Page (contact.html) ───────────────────────────────
+    contact_h1:            '.contact-h1',
+    contact_intro:         '.contact-intro',
+    contact_newsletter_p:  '.contact-newsletter-p',
+    contact_form_h3:       '.contact-form-h3',
+    contact_form_p:        '.contact-form-p',
+
     // ── Legacy keys (kept for backward compat) ───────────────────
     about_intro:           '.about-intro',
     founder_name:          '.founder-name',
@@ -223,6 +290,40 @@
           } catch (e) {}
         }
       });
+
+      // ── Custom products (user-created) ────────────────────────────
+      if (data.custom_products_json) {
+        try {
+          const custom = JSON.parse(data.custom_products_json);
+          const grid = document.querySelector('#productGrid');
+          if (grid && custom.length) {
+            custom.forEach(p => {
+              if (!p || !p.id) return;
+              if (document.getElementById('custom-' + p.id)) return; // already injected
+              const name  = data['custom_product_' + p.id + '_name']  || p.name  || '';
+              const desc  = data['custom_product_' + p.id + '_desc']  || p.desc  || '';
+              const badge = data['custom_product_' + p.id + '_badge'] !== undefined ? data['custom_product_' + p.id + '_badge'] : (p.badge || '');
+              const img   = data['custom_product_' + p.id + '_img']   || '';
+              let sizes   = p.sizes || [];
+              try { if (data['custom_product_' + p.id + '_sizes']) sizes = JSON.parse(data['custom_product_' + p.id + '_sizes']); } catch(e){}
+              const card = document.createElement('div');
+              card.className = 'product-card fade-up';
+              card.id = 'custom-' + p.id;
+              let badgeHtml = '';
+              if (badge === 'On Sale') badgeHtml = `<div class="product-badge" style="background:var(--gold-dim);color:var(--cream);">${badge}</div>`;
+              else if (badge === 'Limited') badgeHtml = `<div class="product-badge" style="background:var(--dark-mid);border:1px solid var(--gold);color:var(--gold);">${badge}</div>`;
+              else if (badge === 'Sold Out') badgeHtml = `<div class="product-badge" style="background:var(--dark);color:var(--muted);border:1px solid var(--muted);">${badge}</div>`;
+              else if (badge === 'New') badgeHtml = `<div class="product-badge" style="background:rgba(74,222,128,.15);color:#4ade80;">${badge}</div>`;
+              const priceHtml = sizes.length ? (sizes.length > 1 ? `<span class="from">From</span>${sizes[0].p}` : sizes[0].p) : '';
+              const selectHtml = sizes.length > 1
+                ? `<select class="bb-size-select">${sizes.map(s=>`<option value="${s.p}">${s.l} — ${s.p}</option>`).join('')}</select>`
+                : '';
+              card.innerHTML = `${badgeHtml}${img ? `<img class="product-img" src="${img}" alt="${name}"/>` : ''}<div class="product-info"><div class="product-name">${name}</div><p class="product-desc">${desc}</p>${selectHtml}<div class="product-price">${priceHtml}</div></div>`;
+              grid.appendChild(card);
+            });
+          }
+        } catch(e) {}
+      }
 
       // ── Color / CSS variable overrides ─────────────────────────────
       const cssVarMap = {
