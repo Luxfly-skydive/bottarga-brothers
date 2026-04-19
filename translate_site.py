@@ -179,7 +179,11 @@ def update_switcher_subdir(soup, filename, lang):
             # Current lang — render as a styled span (no link)
             span = soup.new_tag('span')
             span['class'] = 'lang-btn lang-active'
-            span['style'] = 'opacity:1;font-weight:700;cursor:default;'
+            span['style'] = (
+                'font-size:.72rem;font-weight:700;padding:4px 9px;'
+                'border:1px solid var(--gold);border-radius:2px;'
+                'color:var(--gold);cursor:default;letter-spacing:.06em;'
+            )
             span.string = btn_lang.upper()
             el.replace_with(span)
             continue
@@ -188,6 +192,7 @@ def update_switcher_subdir(soup, filename, lang):
 
         a = soup.new_tag('a', href=href)
         a['class'] = 'lang-btn'
+        a['style'] = 'font-size:.72rem;padding:4px 9px;letter-spacing:.06em;color:var(--muted);'
         a.string = btn_lang.upper()
         el.replace_with(a)
 
@@ -257,6 +262,20 @@ def translate_file(html_file, lang, lc, out_dir):
         if logo.get('href') == 'index.html':
             logo['href'] = '../index.html'
 
+    # Fix long "what is bottarga" nav item — split into two lines
+    for nav in soup.find_all('nav'):
+        for a in nav.find_all('a', href=lambda h: h and 'what-is' in h):
+            txt = a.get_text(strip=True).lower()
+            if 'poutargue' in txt or "qu'est" in txt or 'bottargue' in txt:
+                a.clear()
+                a.append(NavigableString("Qu'est-ce que"))
+                a.append(soup.new_tag('br'))
+                a.append(NavigableString('la Poutargue ?'))
+                existing = a.get('class', [])
+                if isinstance(existing, str):
+                    existing = existing.split()
+                a['class'] = existing + ['what-is-link']
+
     # Inject nav overflow fix — French/other lang items are longer than English
     # This prevents the nav from wrapping to a second row and showing weird lines
     head = soup.find('head')
@@ -264,8 +283,11 @@ def translate_file(html_file, lang, lc, out_dir):
         nav_style = soup.new_tag('style')
         nav_style.string = (
             '.nav-links{gap:0.6rem!important}'
+            '.nav-links li{display:flex!important;align-items:center!important}'
             '.nav-links a{font-size:0.68rem!important;letter-spacing:0.04em!important;white-space:nowrap!important}'
+            '.nav-links a.what-is-link{white-space:normal!important;text-align:center!important;line-height:1.25!important;max-width:4.2rem!important}'
             '.nav-cta{font-size:0.65rem!important;padding:0.5rem 0.9rem!important;letter-spacing:0.1em!important;white-space:nowrap!important}'
+            '.lang-switcher{display:flex!important;align-items:center!important;gap:5px!important}'
         )
         head.append(nav_style)
 
