@@ -269,8 +269,6 @@ def translate_file(html_file, lang, lc, out_dir):
             if 'poutargue' in txt or "qu'est" in txt or 'bottargue' in txt:
                 a.clear()
                 a.append(NavigableString("Qu'est-ce que"))
-                a.append(soup.new_tag('br'))
-                a.append(NavigableString('la Poutargue ?'))
                 existing = a.get('class', [])
                 if isinstance(existing, str):
                     existing = existing.split()
@@ -282,7 +280,7 @@ def translate_file(html_file, lang, lc, out_dir):
     if head:
         nav_style = soup.new_tag('style')
         nav_style.string = (
-            '.nav-links{gap:0.6rem!important}'
+            '.nav-links{gap:1.1rem!important}'
             '.nav-links a{font-size:0.68rem!important;letter-spacing:0.04em!important;white-space:nowrap!important}'
             '.nav-links a.what-is-link{white-space:normal!important;text-align:center!important;line-height:1.25!important}'
             '.nav-cta{font-size:0.65rem!important;padding:0.5rem 0.9rem!important;letter-spacing:0.1em!important;white-space:nowrap!important}'
