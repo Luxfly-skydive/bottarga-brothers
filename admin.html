@@ -142,6 +142,8 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .btn-restore{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;transition:all .2s;}
 .btn-restore:hover{border-color:var(--green);color:var(--green);}
 </style>
+  <link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+  <link href="/favicon.svg" rel="apple-touch-icon"/>
 </head>
 <body>
 
@@ -657,6 +659,31 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 
       <!-- ── SETTINGS ── -->
       <div class="panel" id="panel-settings">
+        <div class="sh">Away Banner</div>
+        <div class="settings-box" style="margin-bottom:1.5rem;">
+          <p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem;">Show a notice across every page of the site — useful for holidays, delays, or special announcements. Visitors can dismiss it.</p>
+          <div class="field">
+            <label>Banner Active</label>
+            <select data-key="away_banner_active">
+              <option value="false">Off — banner hidden</option>
+              <option value="true">On — banner showing on site</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Banner Message</label>
+            <input data-key="away_banner_text" placeholder="e.g. We're away July 1–7. Orders placed now ship July 8." type="text"/>
+          </div>
+          <div class="field">
+            <label>Banner Colour</label>
+            <select data-key="away_banner_color">
+              <option value="#c9a84c">Gold (default)</option>
+              <option value="#0a0a08">Black</option>
+              <option value="#1a1a1a">Dark grey</option>
+              <option value="#b91c1c">Red — urgent notice</option>
+              <option value="#166534">Green — positive news</option>
+            </select>
+          </div>
+        </div>
         <div class="sh">Change Password</div>
         <div class="settings-box">
           <div class="field"><label>New Password</label>

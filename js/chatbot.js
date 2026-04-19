@@ -8,7 +8,8 @@
   const BIZ = {
     name:    'Bottarga Brothers',
     brand:   'Supreme Bottarga™',
-    addr:    'Montreal, Canada H4C 2P4',
+    addrUS:  'Stamford, Connecticut — USA',
+    addrCA:  'Montreal, Québec — Canada',
     phone:   '1-844-MAD-BROS',
     phoneNum:'1-844-623-2767',
     email:   'info@bottargabrothers.com',
@@ -261,7 +262,7 @@
       kw: ['contact','phone','call','email','reach','get in touch','message','talk to someone','speak','where are you','location','address','montreal','canada','office'],
       r: () => {
         ctx.lastEntry = 'contact';
-        return `**Contact Bottarga Brothers 📬**\n\n📞 **${BIZ.phone}** (${BIZ.phoneNum})\n📍 **${BIZ.addr}**\n\n→ [Contact form](${BIZ.contact})\n\nWe're happy to help with:\n• Product questions & recommendations\n• Canada & international orders\n• Wholesale & chef program inquiries\n• Custom or gift orders\n\nWe respond to all messages promptly.`;
+        return `**Contact Bottarga Brothers 📬**\n\n📞 **${BIZ.phone}** (${BIZ.phoneNum})\n✉️ ${BIZ.email}\n\n🇺🇸 **USA Office:** ${BIZ.addrUS}\n🇨🇦 **Canada Office:** ${BIZ.addrCA}\n\n→ [Contact form](${BIZ.contact})\n\nWe're happy to help with:\n• Product questions & recommendations\n• USA & Canada orders\n• Wholesale & chef program inquiries\n• Custom or gift orders\n\nWe respond to all messages promptly.`;
       }
     },
 

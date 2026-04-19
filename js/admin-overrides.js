@@ -442,6 +442,39 @@
         style.textContent = fontCss;
         document.head.appendChild(style);
       }
+
+      // ── Away Banner ────────────────────────────────────────────────
+      // Keys: away_banner_active ('true'/'false'), away_banner_text, away_banner_color
+      if (data.away_banner_active === 'true' && data.away_banner_text
+          && !window.location.pathname.includes('admin')
+          && !sessionStorage.getItem('bb_banner_dismissed')) {
+        const bg   = data.away_banner_color || '#c9a84c';
+        // Determine text contrast: gold bg → dark text, dark bg → cream text
+        const fg   = (bg === '#c9a84c' || bg === 'gold') ? '#0a0a08' : '#f5f0e8';
+        const b    = document.createElement('div');
+        b.id       = 'bb-away-banner';
+        b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:99999;background:${bg};` +
+          `color:${fg};padding:10px 48px 10px 16px;font-size:13.5px;` +
+          `font-family:var(--sans,sans-serif);line-height:1.4;text-align:center;` +
+          `box-shadow:0 2px 8px rgba(0,0,0,.4);`;
+        b.textContent = data.away_banner_text;
+        const x = document.createElement('button');
+        x.textContent = '×';
+        x.setAttribute('aria-label', 'Dismiss');
+        x.style.cssText = `position:absolute;right:14px;top:50%;transform:translateY(-50%);` +
+          `background:none;border:none;font-size:22px;line-height:1;cursor:pointer;` +
+          `padding:0 4px;color:inherit;opacity:.75;`;
+        x.onclick = () => {
+          b.remove();
+          document.body.style.paddingTop = '';
+          sessionStorage.setItem('bb_banner_dismissed', '1');
+        };
+        b.appendChild(x);
+        document.body.prepend(b);
+        requestAnimationFrame(() => {
+          document.body.style.paddingTop = b.offsetHeight + 'px';
+        });
+      }
     })
     .catch(() => {}); // never break the site
 })();

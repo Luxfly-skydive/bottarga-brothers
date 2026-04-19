@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /fr/admin.html
+
+Sitemap: https://bottargabrothers.com/sitemap.xml
