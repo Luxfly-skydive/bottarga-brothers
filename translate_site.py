@@ -283,9 +283,8 @@ def translate_file(html_file, lang, lc, out_dir):
         nav_style = soup.new_tag('style')
         nav_style.string = (
             '.nav-links{gap:0.6rem!important}'
-            '.nav-links li{display:flex!important;align-items:center!important}'
             '.nav-links a{font-size:0.68rem!important;letter-spacing:0.04em!important;white-space:nowrap!important}'
-            '.nav-links a.what-is-link{white-space:normal!important;text-align:center!important;line-height:1.25!important;max-width:4.2rem!important}'
+            '.nav-links a.what-is-link{white-space:normal!important;text-align:center!important;line-height:1.25!important}'
             '.nav-cta{font-size:0.65rem!important;padding:0.5rem 0.9rem!important;letter-spacing:0.1em!important;white-space:nowrap!important}'
             '.lang-switcher{display:flex!important;align-items:center!important;gap:5px!important}'
         )
