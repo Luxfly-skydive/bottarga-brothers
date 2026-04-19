@@ -17,9 +17,17 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .btn-gold{background:var(--gold);color:#0a0a0a;font-weight:700;border:none;padding:13px 28px;border-radius:8px;font-size:.95rem;cursor:pointer;width:100%;transition:opacity .2s;}
 .btn-gold:hover{opacity:.85;}
 .login-error{color:var(--red);font-size:.85rem;margin-top:.75rem;display:none;}
+/* password wrapper with eye icon */
+.pwd-wrap{position:relative;margin-bottom:1rem;}
+.login-box .pwd-wrap input{margin-bottom:0;}
+.pwd-wrap input{padding-right:44px!important;}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;line-height:1;font-size:18px;}
+.eye-btn:hover{color:var(--text);}
+/* admin panel */
 #admin-panel{display:none;}
 .top-bar{background:var(--card);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .top-bar-logo{color:var(--gold);font-weight:700;font-size:1.1rem;}
+.top-bar-user{color:var(--muted);font-size:.8rem;}
 .top-bar-actions{display:flex;gap:.75rem;align-items:center;}
 .btn-save{background:var(--gold);color:#0a0a0a;font-weight:700;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:opacity .2s;}
 .btn-save:hover{opacity:.85;}
@@ -36,9 +44,11 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .product-card h3{font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:1rem;}
 .field{margin-bottom:.75rem;}
 .field label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.35rem;}
-.field input,.field textarea{width:100%;background:#0f0f0f;border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:7px;font-size:.875rem;outline:none;transition:border-color .2s;}
-.field input:focus,.field textarea:focus{border-color:var(--gold);}
+.field input,.field textarea,.field select{width:100%;background:#0f0f0f;border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:7px;font-size:.875rem;outline:none;transition:border-color .2s;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold);}
 .field textarea{resize:vertical;min-height:80px;font-family:inherit;}
+.field select option{background:#1a1a1a;}
+.field .pwd-wrap{margin-bottom:0;}
 .img-preview{width:100%;height:100px;object-fit:cover;border-radius:6px;margin-top:.5rem;background:#1a1a1a;}
 .img-preview[src=""]{display:none;}
 .tabs{display:flex;gap:4px;margin-bottom:2rem;background:#0f0f0f;padding:4px;border-radius:10px;width:fit-content;}
@@ -47,10 +57,13 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 .settings-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;max-width:420px;margin-bottom:1.5rem;}
-.settings-box + .settings-box{margin-top:0;}
+.confirm-block{background:#0f0f0f;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:.5rem;}
+.confirm-block label{color:var(--gold)!important;}
+.confirm-block input{border:none;background:transparent;padding:8px 0 0;}
 .btn-secondary{background:transparent;border:1px solid var(--gold);color:var(--gold);font-weight:600;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:.875rem;transition:all .2s;}
 .btn-secondary:hover{background:var(--gold-dim);}
 .msg{margin-top:.75rem;font-size:.85rem;display:none;}
+.role-badge{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--gold-dim);color:var(--gold);margin-left:.5rem;vertical-align:middle;}
 </style>
 </head>
 <body>
@@ -61,9 +74,12 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
     <h1>Bottarga Brothers</h1>
     <p>Admin Panel — sign in to continue</p>
     <input id="user-input" placeholder="Username" type="text" autocomplete="username"/>
-    <input id="pwd-input" placeholder="Password" type="password" autocomplete="current-password"/>
-    <button class="btn-gold" onclick="doLogin()">Sign In</button>
-    <div class="login-error" id="login-error">Incorrect username or password.</div>
+    <div class="pwd-wrap">
+      <input id="pwd-input" placeholder="Password" type="password" autocomplete="current-password"/>
+      <button class="eye-btn" type="button" onclick="toggleEye('pwd-input',this)" title="Show/hide password">👁</button>
+    </div>
+    <button class="btn-gold" onclick="doLogin()" style="margin-top:.25rem;">Sign In</button>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
@@ -72,13 +88,14 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
   <div class="top-bar">
     <div class="top-bar-logo">⚙ Admin Panel</div>
     <div class="top-bar-actions">
+      <span class="top-bar-user" id="top-user"></span>
       <span class="save-status" id="save-status">✓ Saved</span>
       <button class="btn-save" id="save-btn" onclick="saveAll()">Save All Changes</button>
       <button class="btn-logout" onclick="doLogout()">Log out</button>
     </div>
   </div>
   <div class="admin-content">
-    <div class="tabs">
+    <div class="tabs" id="main-tabs">
       <button class="tab active" onclick="switchTab('products',this)">Products</button>
       <button class="tab" onclick="switchTab('pages',this)">Page Text</button>
       <button class="tab" onclick="switchTab('settings',this)">Settings</button>
@@ -107,24 +124,48 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 
       <div class="section-heading">Change Password</div>
       <div class="settings-box">
-        <div class="field"><label>New Password</label><input id="new-pwd" placeholder="At least 8 characters" type="password"/></div>
-        <div class="field"><label>Confirm New Password</label><input id="confirm-pwd" placeholder="Repeat password" type="password"/></div>
+        <div class="field">
+          <label>New Password</label>
+          <div class="pwd-wrap"><input id="new-pwd" placeholder="At least 8 characters" type="password"/><button class="eye-btn" type="button" onclick="toggleEye('new-pwd',this)">👁</button></div>
+        </div>
+        <div class="field">
+          <label>Confirm New Password</label>
+          <div class="pwd-wrap"><input id="confirm-pwd" placeholder="Repeat password" type="password"/><button class="eye-btn" type="button" onclick="toggleEye('confirm-pwd',this)">👁</button></div>
+        </div>
         <button class="btn-secondary" onclick="changePassword()">Update Password</button>
         <div class="msg" id="pwd-change-msg"></div>
       </div>
 
-      <div class="section-heading">Add New User</div>
-      <div class="settings-box">
-        <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.25rem;">Create a new admin account. You must confirm your own password to proceed.</p>
-        <div class="field"><label>New Username</label><input id="new-user-name" placeholder="e.g. marco" type="text" autocomplete="off"/></div>
-        <div class="field"><label>New User Password</label><input id="new-user-pwd" placeholder="At least 8 characters" type="password" autocomplete="new-password"/></div>
-        <div class="field"><label>Confirm New User Password</label><input id="new-user-pwd2" placeholder="Repeat password" type="password" autocomplete="new-password"/></div>
-        <div class="field" style="background:#0f0f0f;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:.5rem;">
-          <label style="color:var(--gold);">Your Current Password (confirmation)</label>
-          <input id="confirm-own-pwd" placeholder="Enter your password to confirm" type="password" autocomplete="current-password" style="border:none;background:transparent;padding:8px 0 0;"/>
+      <!-- ADD USER — only shown to admins -->
+      <div id="add-user-section" style="display:none;">
+        <div class="section-heading">Add New User</div>
+        <div class="settings-box">
+          <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.25rem;">Create a new account. Admins can add more users; Users cannot.</p>
+          <div class="field"><label>Username</label><input id="new-user-name" placeholder="e.g. marco" type="text" autocomplete="off"/></div>
+          <div class="field">
+            <label>Password</label>
+            <div class="pwd-wrap"><input id="new-user-pwd" placeholder="At least 8 characters" type="password" autocomplete="new-password"/><button class="eye-btn" type="button" onclick="toggleEye('new-user-pwd',this)">👁</button></div>
+          </div>
+          <div class="field">
+            <label>Confirm Password</label>
+            <div class="pwd-wrap"><input id="new-user-pwd2" placeholder="Repeat password" type="password" autocomplete="new-password"/><button class="eye-btn" type="button" onclick="toggleEye('new-user-pwd2',this)">👁</button></div>
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <select id="new-user-role">
+              <option value="user">User — can use the panel, cannot add others</option>
+              <option value="admin">Admin — full access, can add more users</option>
+            </select>
+          </div>
+          <div class="confirm-block">
+            <div class="field" style="margin-bottom:0;">
+              <label>Your Password (confirmation)</label>
+              <div class="pwd-wrap"><input id="confirm-own-pwd" placeholder="Enter your password to confirm" type="password" autocomplete="current-password"/><button class="eye-btn" type="button" onclick="toggleEye('confirm-own-pwd',this)">👁</button></div>
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="addUser()" style="margin-top:1rem;">Create Account</button>
+          <div class="msg" id="add-user-msg"></div>
         </div>
-        <button class="btn-secondary" onclick="addUser()">Create User</button>
-        <div class="msg" id="add-user-msg"></div>
       </div>
 
     </div>
@@ -134,12 +175,16 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 <script>
 const WORKER = 'https://bottarga-admin.zoozoomfast.workers.dev';
 
-// ── Session identity (persists across tabs, never resets) ────────────
+// ── Session UUID — persists in localStorage forever ──────────────────
 function getSessionId() {
   let sid = localStorage.getItem('bb_session_id');
   if (!sid) {
-    sid = crypto.randomUUID ? crypto.randomUUID()
-      : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));
+    sid = typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
     localStorage.setItem('bb_session_id', sid);
   }
   return sid;
@@ -147,6 +192,7 @@ function getSessionId() {
 const SESSION_ID = getSessionId();
 let SESSION_USER = '';
 let SESSION_PWD  = '';
+let SESSION_ROLE = '';
 
 function authHeaders() {
   return {
@@ -155,6 +201,14 @@ function authHeaders() {
     'X-Admin-Password': SESSION_PWD,
     'X-Session-ID': SESSION_ID,
   };
+}
+
+// ── Eye toggle ────────────────────────────────────────────────────────
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.style.opacity = inp.type === 'text' ? '1' : '0.5';
 }
 
 const PRODUCTS = [
@@ -171,34 +225,35 @@ async function doLogin() {
   const err  = document.getElementById('login-error');
   err.style.display = 'none';
   if (!user || !pwd) { err.textContent = 'Enter both username and password.'; err.style.display = 'block'; return; }
-
   try {
-    const res = await fetch(WORKER + '/content', {
+    const res = await fetch(WORKER + '/me', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': user, 'X-Admin-Password': pwd, 'X-Session-ID': SESSION_ID },
-      body: JSON.stringify({ _test: true }),
+      body: '{}',
     });
-    if (res.status === 401) { err.textContent = 'Incorrect username or password.'; err.style.display = 'block'; return; }
     if (res.status === 429) { const d = await res.json(); err.textContent = d.error; err.style.display = 'block'; return; }
+    if (!res.ok) { err.textContent = 'Incorrect username or password.'; err.style.display = 'block'; return; }
+    const me = await res.json();
     SESSION_USER = user;
     SESSION_PWD  = pwd;
-    document.getElementById('login-screen').style.display  = 'none';
-    document.getElementById('admin-panel').style.display   = 'block';
+    SESSION_ROLE = me.role;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display  = 'block';
+    document.getElementById('top-user').innerHTML = `${SESSION_USER}<span class="role-badge">${SESSION_ROLE}</span>`;
+    // Only admins see Add User section
+    if (SESSION_ROLE === 'admin') document.getElementById('add-user-section').style.display = 'block';
     await loadContent();
-  } catch(e) {
-    err.textContent = 'Connection error. Please try again.';
-    err.style.display = 'block';
-  }
+  } catch(e) { err.textContent = 'Connection error. Please try again.'; err.style.display = 'block'; }
 }
 
 document.getElementById('user-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pwd-input').focus(); });
 document.getElementById('pwd-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
 function doLogout() {
-  SESSION_USER = '';
-  SESSION_PWD  = '';
+  SESSION_USER = ''; SESSION_PWD = ''; SESSION_ROLE = '';
   document.getElementById('admin-panel').style.display  = 'none';
   document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('add-user-section').style.display = 'none';
   document.getElementById('user-input').value = '';
   document.getElementById('pwd-input').value  = '';
 }
@@ -213,8 +268,7 @@ function switchTab(name, btn) {
 
 // ── PRODUCT GRID ──────────────────────────────────────────────────────
 function buildProductGrid() {
-  const grid = document.getElementById('product-grid');
-  grid.innerHTML = PRODUCTS.map(p => `
+  document.getElementById('product-grid').innerHTML = PRODUCTS.map(p => `
     <div class="product-card">
       <h3>${p.label}</h3>
       <div class="field"><label>Product Name</label><input type="text" data-key="product_${p.id}_name" placeholder="${p.label}"/></div>
@@ -237,15 +291,14 @@ function updatePreview(input, pid) {
 async function loadContent() {
   buildProductGrid();
   try {
-    const res  = await fetch(WORKER + '/content');
-    const data = await res.json();
+    const data = await fetch(WORKER + '/content').then(r => r.json());
     if (!data || !Object.keys(data).length) return;
     document.querySelectorAll('[data-key]').forEach(el => {
       const v = data[el.dataset.key];
       if (v !== undefined) {
         el.value = v;
         if (el.dataset.key.endsWith('_img') && v) {
-          const pid = el.dataset.key.replace('product_','').replace('_img','');
+          const pid  = el.dataset.key.replace('product_','').replace('_img','');
           const prev = document.getElementById('prev_' + pid);
           if (prev) { prev.src = v; prev.style.display = 'block'; }
         }
@@ -262,15 +315,9 @@ async function saveAll() {
   document.querySelectorAll('[data-key]').forEach(el => { if (el.value.trim()) data[el.dataset.key] = el.value.trim(); });
   try {
     const res = await fetch(WORKER + '/content', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
-    if (res.ok) {
-      const s = document.getElementById('save-status');
-      s.style.display = 'inline';
-      setTimeout(() => s.style.display = 'none', 3000);
-    } else if (res.status === 401) {
-      alert('Session expired. Please log out and sign in again.');
-    } else {
-      alert('Save failed. Please try again.');
-    }
+    if (res.ok) { const s = document.getElementById('save-status'); s.style.display = 'inline'; setTimeout(() => s.style.display = 'none', 3000); }
+    else if (res.status === 401) alert('Session expired. Please log out and sign in again.');
+    else alert('Save failed. Please try again.');
   } catch(e) { alert('Connection error during save.'); }
   btn.disabled = false; btn.textContent = 'Save All Changes';
 }
@@ -290,51 +337,42 @@ async function changePassword() {
       showMsg(msg, '✓ Password updated successfully.', 'green');
       document.getElementById('new-pwd').value     = '';
       document.getElementById('confirm-pwd').value = '';
-    } else {
-      const d = await res.json();
-      showMsg(msg, d.error || 'Failed to update password.', 'red');
-    }
+    } else { const d = await res.json(); showMsg(msg, d.error || 'Failed to update.', 'red'); }
   } catch(e) { showMsg(msg, 'Connection error.', 'red'); }
 }
 
 // ── ADD USER ───────────────────────────────────────────────────────────
 async function addUser() {
-  const newUser  = document.getElementById('new-user-name').value.trim();
-  const newPwd   = document.getElementById('new-user-pwd').value;
-  const newPwd2  = document.getElementById('new-user-pwd2').value;
-  const ownPwd   = document.getElementById('confirm-own-pwd').value;
-  const msg      = document.getElementById('add-user-msg');
+  const newUser = document.getElementById('new-user-name').value.trim();
+  const newPwd  = document.getElementById('new-user-pwd').value;
+  const newPwd2 = document.getElementById('new-user-pwd2').value;
+  const role    = document.getElementById('new-user-role').value;
+  const ownPwd  = document.getElementById('confirm-own-pwd').value;
+  const msg     = document.getElementById('add-user-msg');
   msg.style.display = 'none';
-
   if (!newUser)             { showMsg(msg, 'Enter a username.', 'red'); return; }
   if (newUser.length < 3)   { showMsg(msg, 'Username must be at least 3 characters.', 'red'); return; }
-  if (newPwd.length < 8)    { showMsg(msg, 'New user password must be at least 8 characters.', 'red'); return; }
-  if (newPwd !== newPwd2)   { showMsg(msg, 'New user passwords do not match.', 'red'); return; }
+  if (newPwd.length < 8)    { showMsg(msg, 'Password must be at least 8 characters.', 'red'); return; }
+  if (newPwd !== newPwd2)   { showMsg(msg, 'Passwords do not match.', 'red'); return; }
   if (!ownPwd)              { showMsg(msg, 'Enter your current password to confirm.', 'red'); return; }
   if (ownPwd !== SESSION_PWD) { showMsg(msg, 'Your current password is incorrect.', 'red'); return; }
-
   try {
-    const res = await fetch(WORKER + '/add-user', {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ new_username: newUser, new_password: newPwd }),
-    });
+    const res = await fetch(WORKER + '/add-user', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ new_username: newUser, new_password: newPwd, role }) });
     const d = await res.json();
     if (res.ok) {
-      showMsg(msg, `✓ User "${newUser}" created successfully.`, 'green');
-      document.getElementById('new-user-name').value  = '';
-      document.getElementById('new-user-pwd').value   = '';
-      document.getElementById('new-user-pwd2').value  = '';
+      showMsg(msg, `✓ ${d.message}`, 'green');
+      document.getElementById('new-user-name').value   = '';
+      document.getElementById('new-user-pwd').value    = '';
+      document.getElementById('new-user-pwd2').value   = '';
       document.getElementById('confirm-own-pwd').value = '';
-    } else {
-      showMsg(msg, d.error || 'Failed to create user.', 'red');
-    }
+      document.getElementById('new-user-role').value   = 'user';
+    } else { showMsg(msg, d.error || 'Failed to create user.', 'red'); }
   } catch(e) { showMsg(msg, 'Connection error.', 'red'); }
 }
 
 function showMsg(el, text, color) {
-  el.textContent = text;
-  el.style.color = color === 'green' ? 'var(--green)' : 'var(--red)';
+  el.textContent   = text;
+  el.style.color   = color === 'green' ? 'var(--green)' : 'var(--red)';
   el.style.display = 'block';
 }
 </script>
