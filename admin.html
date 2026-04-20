@@ -212,7 +212,7 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
         <span>✏️ Edit Site Pages</span>
         <span class="nav-group-arrow" id="pages-arrow">▼</span>
       </button>
-      <div class="nav-group-items open" id="pages-dropdown">
+      <div class="nav-group-items" id="pages-dropdown">
         <button class="admin-nav-item" data-page="index.html" onclick="switchPage(this)">🏠 Home</button>
         <button class="admin-nav-item" data-page="about.html" onclick="switchPage(this)">📖 About</button>
         <button class="admin-nav-item" data-page="shop.html" onclick="switchPage(this)">🛒 Shop</button>
@@ -252,13 +252,7 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
     <div class="edit-toolbar" id="edit-toolbar">
       <div class="edit-hint">
         <span class="edit-hint-dot"></span>
-        <span>Click any text or image to edit — changes apply to all screen sizes</span>
-      </div>
-      <div class="device-btns">
-        <span style="font-size:.62rem;color:var(--muted);margin-right:.3rem;">Preview as:</span>
-        <button class="device-btn active" onclick="setDevice('desktop',this)">🖥 Desktop</button>
-        <button class="device-btn" onclick="setDevice('tablet',this)">📟 Tablet</button>
-        <button class="device-btn" onclick="setDevice('mobile',this)">📱 Mobile</button>
+        <span>Click any text or image to edit</span>
       </div>
     </div>
 
@@ -272,7 +266,7 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
     <!-- WYSIWYG IFRAME -->
     <div id="wysiwyg-wrap">
       <div class="iframe-scroll-outer" id="iframe-scroll-outer">
-        <iframe id="page-frame" src="" title="Page Editor"></iframe>
+        <iframe id="page-frame" src="about:blank" title="Page Editor"></iframe>
       </div>
     </div>
 
@@ -673,7 +667,7 @@ function injectEditMode(doc){
   const style=doc.createElement('style');
   style.id='bb-edit-style';
   style.textContent=`
-    nav.navbar,nav.navbar *{display:none!important;}
+    nav.navbar,nav.navbar *{pointer-events:none!important;cursor:default!important;}
     [data-bb-edit]:hover{outline:2px solid rgba(201,168,76,0.75)!important;outline-offset:3px;cursor:pointer!important;background:rgba(201,168,76,0.06)!important;border-radius:2px;}
     img[data-bb-img]:hover{outline:3px solid #c9a84c!important;outline-offset:3px;cursor:pointer!important;}
     .bb-active{outline:2px solid #c9a84c!important;outline-offset:3px!important;background:rgba(201,168,76,0.09)!important;border-radius:2px;}
