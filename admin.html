@@ -639,9 +639,9 @@ function openSettings(name,btn){
 }
 function loadPage(page){
   currentPage=page;closeEditPopover();
+  if(window._bbObserver){window._bbObserver.disconnect();window._bbObserver=null;}
   const frame=document.getElementById('page-frame');
   if(frame.src.endsWith('/'+page)||frame.src===page){
-    // Same page — force reload to re-inject edit mode
     frame.contentWindow.location.reload();
   }else{
     frame.src=page;
@@ -660,79 +660,58 @@ document.getElementById('page-frame').addEventListener('load',function(){
   setTimeout(()=>injectEditMode(this.contentDocument),400);
 });
 
-// INJECT EDIT MODE — contenteditable approach (no popover, no event capture tricks)
-function bbHandleInput(e){
-  const el=e.currentTarget;
-  const newVal=(el.innerText||el.textContent||'').trim();
-  const key=el.dataset.bbKey;
-  const sel=el.dataset.bbSel;
-  if(key){
-    pendingChanges[key]=newVal;
-  }else if(sel&&currentPage){
-    const pg=currentPage.replace('.html','').replace(/-/g,'_');
-    const wk='_wysiwyg_'+pg;
-    try{const ex=pendingChanges[wk]?JSON.parse(pendingChanges[wk]):{};ex[sel]=newVal;pendingChanges[wk]=JSON.stringify(ex);}catch(ex){}
-  }
-  updateDirty();
-}
-function bbHandleKeydown(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();e.currentTarget.blur();}
-  if(e.key==='Escape'){e.currentTarget.textContent=e.currentTarget.dataset.bbOrig||'';e.currentTarget.blur();}
-}
-function bbHandlePaste(e){
-  e.preventDefault();
-  const text=(e.clipboardData||window.clipboardData).getData('text/plain');
-  document.execCommand('insertText',false,text);
-}
+// INJECT EDIT MODE — designMode approach (battle-tested, used by all real WYSIWYG editors)
 function injectEditMode(doc){
   if(!doc||!doc.body)return;
+
+  // Inject CSS
   const old=doc.getElementById('bb-edit-style');if(old)old.remove();
   const style=doc.createElement('style');
   style.id='bb-edit-style';
   style.textContent=`
-    nav.navbar,nav.navbar *{pointer-events:none!important;cursor:default!important;}
-    [contenteditable="true"]{outline:none;cursor:text;}
-    [contenteditable="true"]:hover{outline:2px solid rgba(201,168,76,.8)!important;outline-offset:3px;border-radius:2px;}
-    [contenteditable="true"]:focus{outline:2px solid #c9a84c!important;outline-offset:3px;background:rgba(201,168,76,.06)!important;border-radius:2px;}
-    img[data-bb-img]:hover{outline:3px solid #c9a84c!important;outline-offset:2px;cursor:pointer!important;}
+    *:not(#bb-badge):hover{outline:1px dashed rgba(201,168,76,.5)!important;}
+    img{cursor:pointer!important;}
     #bb-badge{position:fixed;top:0;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.97);color:#0a0a08;font-size:11px;font-weight:800;letter-spacing:1.5px;padding:4px 16px;border-radius:0 0 10px 10px;z-index:999999;pointer-events:none;font-family:system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.4);}
   `;
   doc.head.appendChild(style);
-  if(!doc.getElementById('bb-badge')){const b=doc.createElement('div');b.id='bb-badge';b.textContent='✏ EDIT MODE — click any text to edit';doc.body.appendChild(b);}
 
-  // Make leaf text elements contenteditable
-  const TSELS='h1,h2,h3,h4,h5,h6,p,span,a,li,blockquote,label,caption,td,th';
-  doc.querySelectorAll(TSELS).forEach(el=>{
-    if(!el.textContent.trim())return;
-    if(el.querySelectorAll('h1,h2,h3,h4,p,ul,ol,div,table').length>0)return;
-    if(el.id==='bb-badge')return;
-    if(el.closest('[contenteditable="true"]'))return; // skip nested
-    el.removeEventListener('input',bbHandleInput);
-    el.removeEventListener('keydown',bbHandleKeydown);
-    el.removeEventListener('paste',bbHandlePaste);
-    el.setAttribute('contenteditable','true');
-    el.dataset.bbOrig=el.textContent.trim();
-    el.dataset.bbKey=findKvKey(el,doc)||'';
-    el.dataset.bbSel=genSel(el,doc);
-    el.addEventListener('input',bbHandleInput);
-    el.addEventListener('keydown',bbHandleKeydown);
-    el.addEventListener('paste',bbHandlePaste);
-  });
+  // Badge
+  if(!doc.getElementById('bb-badge')){
+    const b=doc.createElement('div');b.id='bb-badge';
+    b.textContent='✏ EDIT MODE — click any text to edit';
+    doc.body.appendChild(b);
+  }
 
-  // Images — direct click listener, not contenteditable
-  doc.querySelectorAll('img').forEach(img=>{
-    if(img.dataset.bbImg)return; // already wired
-    img.setAttribute('data-bb-img','1');
-    img.dataset.bbImg='1';
-    img.style.cursor='pointer';
-    img.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();openImgDialog(img);});
-  });
+  // THE KEY: one line makes the entire document editable
+  doc.designMode='on';
 
-  // Block all link navigation and form submissions
-  doc.querySelectorAll('a:not([contenteditable])').forEach(a=>{
-    a.addEventListener('click',e=>e.preventDefault(),true);
+  // Track changes via MutationObserver (characterData = user typing)
+  if(window._bbObserver)window._bbObserver.disconnect();
+  window._bbObserver=new MutationObserver(mutations=>{
+    mutations.forEach(m=>{
+      if(m.type!=='characterData')return;
+      const el=m.target.parentElement;
+      if(!el||el.id==='bb-badge')return;
+      const key=findKvKey(el,doc);
+      if(key){
+        pendingChanges[key]=el.textContent.trim();
+      }else if(currentPage){
+        const sel=genSel(el,doc);
+        if(sel){
+          const pg=currentPage.replace('.html','').replace(/-/g,'_');
+          const wk='_wysiwyg_'+pg;
+          try{const ex=pendingChanges[wk]?JSON.parse(pendingChanges[wk]):{};ex[sel]=el.textContent.trim();pendingChanges[wk]=JSON.stringify(ex);}catch(e){}
+        }
+      }
+      updateDirty();
+    });
   });
-  doc.addEventListener('submit',e=>e.preventDefault(),true);
+  window._bbObserver.observe(doc.body,{characterData:true,subtree:true});
+
+  // Image clicks — capture phase mousedown so designMode doesn't swallow it
+  doc.addEventListener('mousedown',function bbImg(e){
+    if(e.target&&e.target.tagName==='IMG'){e.preventDefault();openImgDialog(e.target);}
+  },true);
 }
 
 // FIND KV KEY FOR ELEMENT
