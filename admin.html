@@ -268,6 +268,14 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
       <div class="iframe-scroll-outer" id="iframe-scroll-outer">
         <iframe id="page-frame" src="about:blank" title="Page Editor"></iframe>
       </div>
+      <!-- FORM FIELD EDITOR — slides up when clicking form inputs in WYSIWYG -->
+      <div id="form-field-editor" style="display:none;border-top:1px solid var(--border);background:var(--card);padding:.7rem 1.1rem;gap:.65rem;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+        <span style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);white-space:nowrap;">✏ Form Field: <span id="ffe-field-name" style="color:var(--text);font-weight:400;letter-spacing:0;text-transform:none;"></span></span>
+        <div style="display:flex;align-items:center;gap:.35rem;"><label style="font-size:.62rem;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;">Label</label><input id="ffe-label" type="text" style="background:#0f0f0f;border:1px solid var(--border);color:var(--text);padding:4px 9px;border-radius:5px;font-size:.82rem;min-width:130px;outline:none;font-family:inherit;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="display:flex;align-items:center;gap:.35rem;"><label style="font-size:.62rem;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;">Placeholder</label><input id="ffe-placeholder" type="text" style="background:#0f0f0f;border:1px solid var(--border);color:var(--text);padding:4px 9px;border-radius:5px;font-size:.82rem;min-width:130px;outline:none;font-family:inherit;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <button onclick="applyFormEdit()" style="background:var(--gold);color:#0a0a0a;font-weight:700;border:none;padding:5px 15px;border-radius:5px;font-size:.78rem;cursor:pointer;font-family:inherit;">Apply</button>
+        <button onclick="closeFormEditor()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 11px;border-radius:5px;font-size:.78rem;cursor:pointer;font-family:inherit;">Cancel</button>
+      </div>
     </div>
 
     <!-- SETTINGS AREA -->
@@ -508,6 +516,9 @@ const TEXT_MAP={
   contact_faq1_h4:'.contact-faq1-h4',contact_faq1_p:'.contact-faq1-p',contact_faq2_h4:'.contact-faq2-h4',contact_faq2_p:'.contact-faq2-p',
   contact_faq3_h4:'.contact-faq3-h4',contact_faq3_p:'.contact-faq3-p',contact_faq4_h4:'.contact-faq4-h4',contact_faq4_p:'.contact-faq4-p',
   contact_faq5_h4:'.contact-faq5-h4',contact_faq5_p:'.contact-faq5-p',
+  contact_label_firstName:'label[for="firstName"]',contact_label_lastName:'label[for="lastName"]',
+  contact_label_email:'label[for="email"]',contact_label_subject:'label[for="subject"]',
+  contact_label_message:'label[for="message"]',
   shop_feat1_title:'.shop-feat1-title',shop_feat1_p:'.shop-feat1-p',shop_feat2_title:'.shop-feat2-title',shop_feat2_p:'.shop-feat2-p',
   shop_feat3_title:'.shop-feat3-title',shop_feat3_p:'.shop-feat3-p',shop_feat4_title:'.shop-feat4-title',shop_feat4_p:'.shop-feat4-p',
 };
@@ -712,6 +723,14 @@ function injectEditMode(doc){
   doc.addEventListener('mousedown',function bbImg(e){
     if(e.target&&e.target.tagName==='IMG'){e.preventDefault();openImgDialog(e.target);}
   },true);
+  // Form field clicks — intercept before designMode; open label/placeholder editor
+  doc.addEventListener('mousedown',function(e){
+    const tgt=e.target;
+    if(!['INPUT','TEXTAREA','SELECT'].includes(tgt.tagName))return;
+    e.preventDefault();e.stopPropagation();
+    closeFormEditor();
+    openFormEditor(tgt,doc);
+  },true);
 }
 
 // FIND KV KEY FOR ELEMENT
@@ -750,6 +769,32 @@ function genSel(el,doc){
 
 // closeEditPopover kept as no-op so saveAll and other callers don't break
 function closeEditPopover(){}
+// FORM FIELD EDITOR — handles INPUT/TEXTAREA/SELECT clicks in WYSIWYG
+let _ffeEl=null,_ffeLabelEl=null;
+function openFormEditor(el,doc){
+  _ffeEl=el;
+  _ffeLabelEl=el.id?doc.querySelector('label[for="'+el.id+'"]'):null;
+  document.getElementById('ffe-field-name').textContent=el.id||el.name||el.tagName.toLowerCase();
+  const lInp=document.getElementById('ffe-label');
+  lInp.value=_ffeLabelEl?_ffeLabelEl.textContent.trim():'';
+  lInp.disabled=!_ffeLabelEl;
+  lInp.style.opacity=_ffeLabelEl?'1':'.35';
+  document.getElementById('ffe-placeholder').value=el.placeholder||'';
+  document.getElementById('form-field-editor').style.display='flex';
+}
+function applyFormEdit(){
+  if(!_ffeEl)return;
+  const id=(_ffeEl.id||_ffeEl.name||'').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const labelVal=document.getElementById('ffe-label').value.trim();
+  const phVal=document.getElementById('ffe-placeholder').value.trim();
+  if(_ffeLabelEl&&labelVal){_ffeLabelEl.textContent=labelVal;pendingChanges['contact_label_'+id]=labelVal;}
+  if(phVal!==undefined&&phVal!==null){_ffeEl.placeholder=phVal;pendingChanges['contact_ph_'+id]=phVal;}
+  updateDirty();closeFormEditor();
+}
+function closeFormEditor(){
+  document.getElementById('form-field-editor').style.display='none';
+  _ffeEl=null;_ffeLabelEl=null;
+}
 // IMAGE DIALOG
 function openImgDialog(imgEl){
   const frame=document.getElementById('page-frame');

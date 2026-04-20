@@ -265,6 +265,11 @@
     contact_faq4_p:        '.contact-faq4-p',
     contact_faq5_h4:       '.contact-faq5-h4',
     contact_faq5_p:        '.contact-faq5-p',
+    contact_label_firstName: 'label[for="firstName"]',
+    contact_label_lastName:  'label[for="lastName"]',
+    contact_label_email:     'label[for="email"]',
+    contact_label_subject:   'label[for="subject"]',
+    contact_label_message:   'label[for="message"]',
 
     // ── Legacy keys (kept for backward compat) ───────────────────
     about_intro:           '.about-intro',
@@ -465,6 +470,20 @@
           });
         } catch(e) {}
       }
+
+      // ── Form placeholder overrides (contact.html) ─────────────────
+      // Placeholders are HTML attributes — can't be set via textContent
+      const FORM_PH_MAP = {
+        contact_ph_firstName: { sel: '#firstName', attr: 'placeholder' },
+        contact_ph_lastName:  { sel: '#lastName',  attr: 'placeholder' },
+        contact_ph_email:     { sel: '#email',     attr: 'placeholder' },
+        contact_ph_message:   { sel: '#message',   attr: 'placeholder' },
+      };
+      Object.entries(FORM_PH_MAP).forEach(([key, {sel, attr}]) => {
+        if (data[key]) {
+          document.querySelectorAll(sel).forEach(el => el.setAttribute(attr, data[key]));
+        }
+      });
 
       // ── Away Banner ────────────────────────────────────────────────
       // Keys: away_banner_active ('true'/'false'), away_banner_text, away_banner_color
