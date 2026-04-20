@@ -443,6 +443,29 @@
         document.head.appendChild(style);
       }
 
+      // ── WYSIWYG overrides (saved by new admin WYSIWYG editor) ─────
+      // Keys: _wysiwyg_[page] = JSON { selector: textValue }
+      //       _wysiwyg_[page]_imgs = JSON { selector: imgSrc }
+      const pageName = window.location.pathname.split('/').pop().replace('.html','').replace('-','_') || 'index';
+      const wKey = '_wysiwyg_' + pageName;
+      const wImgKey = '_wysiwyg_' + pageName + '_imgs';
+      if (data[wKey]) {
+        try {
+          const overrides = JSON.parse(data[wKey]);
+          Object.entries(overrides).forEach(([sel, val]) => {
+            try { document.querySelectorAll(sel).forEach(el => { el.textContent = val; }); } catch(e) {}
+          });
+        } catch(e) {}
+      }
+      if (data[wImgKey]) {
+        try {
+          const imgOverrides = JSON.parse(data[wImgKey]);
+          Object.entries(imgOverrides).forEach(([sel, src]) => {
+            try { document.querySelectorAll(sel).forEach(el => { el.src = src; }); } catch(e) {}
+          });
+        } catch(e) {}
+      }
+
       // ── Away Banner ────────────────────────────────────────────────
       // Keys: away_banner_active ('true'/'false'), away_banner_text, away_banner_color
       if (data.away_banner_active === 'true' && data.away_banner_text
