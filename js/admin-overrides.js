@@ -485,6 +485,17 @@
         }
       });
 
+      // ── CSS style overrides (object-position, zoom, etc.) ─────────
+      // Keys: _wysiwyg_[page]_style = JSON { selector: { prop: val } }
+      const wStyle = data['_wysiwyg_' + pageName + '_style'];
+      if (wStyle) {
+        try {
+          Object.entries(JSON.parse(wStyle)).forEach(([sel, styles]) => {
+            try { document.querySelectorAll(sel).forEach(el => Object.assign(el.style, styles)); } catch(e) {}
+          });
+        } catch(e) {}
+      }
+
       // ── Away Banner ────────────────────────────────────────────────
       // Keys: away_banner_active ('true'/'false'), away_banner_text, away_banner_color
       if (data.away_banner_active === 'true' && data.away_banner_text
