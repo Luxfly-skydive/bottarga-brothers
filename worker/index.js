@@ -123,9 +123,19 @@ export default {
     }
 
     if (request.method === 'POST' && path === '/chat') {
+      // ── Bot protection: origin check ──────────────────────────
+      const origin = request.headers.get('Origin') || '';
+      if (origin && !origin.includes('bottargabrothers') && !origin.includes('github.io')) {
+        return Response.json({ error: 'Forbidden' }, { status: 403, headers: CORS });
+      }
+
       try {
         const body = await request.json();
-        const messages = body.messages || [];
+        // Cap messages: max 20 items, 2000 chars each
+        const rawMsgs = body.messages || [];
+        const messages = rawMsgs.slice(-20).map(m => ({
+          ...m, content: String(m.content || '').slice(0, 2000)
+        }));
         if (!messages.length) {
           return Response.json({ reply: 'How can I help you with bottarga today?' }, { headers: CORS });
         }

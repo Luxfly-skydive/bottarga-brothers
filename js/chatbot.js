@@ -580,7 +580,11 @@
       return { remove: () => t.remove() };
     }
 
+    let sending = false;
     async function send() {
+      if (sending) return;
+      sending = true;
+      setTimeout(() => { sending = false; }, 1500);
       const raw = input.value.trim();
       if (!raw) return;
       addMsg(raw, 'user');
