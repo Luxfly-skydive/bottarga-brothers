@@ -124,6 +124,8 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .badge-opt{flex:1;text-align:center;padding:4px 2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.67rem;font-weight:600;color:var(--muted);transition:all .18s;}
 .badge-opt:hover{border-color:var(--gold);}
 .badge-opt.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+.btn-pause-product{background:none;border:1px solid rgba(251,191,36,.3);color:#f59e0b;padding:5px 13px;border-radius:7px;font-size:.75rem;cursor:pointer;margin-right:.4rem;}
+.btn-pause-product:hover{background:rgba(251,191,36,.08);}
 .btn-remove-product{background:none;border:1px solid rgba(248,113,113,.3);color:var(--red);padding:5px 13px;border-radius:7px;font-size:.75rem;cursor:pointer;}
 .btn-remove-product:hover{background:rgba(248,113,113,.08);}
 .removed-section{margin-top:.9rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
@@ -236,7 +238,6 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
     <div class="admin-sidebar-section">Settings</div>
     <button class="admin-nav-item admin-nav-settings" onclick="openSettings('products',this)">📦 Products</button>
     <button class="admin-nav-item admin-nav-settings" onclick="openSettings('colors',this)">🎨 Colors &amp; Fonts</button>
-    <button class="admin-nav-item admin-nav-settings" onclick="openSettings('banner',this)">📢 Away Banner</button>
     <button class="admin-nav-item admin-nav-settings" onclick="openSettings('users',this)">🔑 Password &amp; Users</button>
   </div>
 
@@ -330,29 +331,6 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
                 <option value="'Inter', system-ui, sans-serif">Inter (current)</option>
                 <option value="system-ui, sans-serif">System UI</option>
                 <option value="'DM Sans', system-ui, sans-serif">DM Sans</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- BANNER -->
-        <div class="panel" id="panel-banner">
-          <div class="sh">Away Banner</div>
-          <div class="settings-box">
-            <p style="color:var(--muted);font-size:.8rem;margin-bottom:.9rem;">Show a notice across every page — useful for holidays, shipping delays, or special offers. Visitors can dismiss it.</p>
-            <div class="field"><label>Banner Active</label>
-              <select data-key="away_banner_active">
-                <option value="false">Off — hidden</option>
-                <option value="true">On — showing on site</option>
-              </select>
-            </div>
-            <div class="field"><label>Message</label><input data-key="away_banner_text" type="text" placeholder="e.g. We're away July 1–7. Orders placed now ship July 8."/></div>
-            <div class="field"><label>Colour</label>
-              <select data-key="away_banner_color">
-                <option value="#c9a84c">Gold (default)</option>
-                <option value="#0a0a08">Black</option>
-                <option value="#b91c1c">Red — urgent</option>
-                <option value="#166534">Green — positive news</option>
               </select>
             </div>
           </div>
@@ -774,6 +752,13 @@ function injectEditMode(doc){
   doc.addEventListener('mousedown',function bbImg(e){
     if(e.target&&e.target.tagName==='IMG'){e.preventDefault();openImgDialog(e.target);}
   },true);
+  // Image hover highlights — gold outline on hover so every clickable image is obvious
+  doc.querySelectorAll('img').forEach(img=>{
+    img.style.cursor='pointer';
+    img.style.transition='outline .15s';
+    img.addEventListener('mouseenter',()=>{img.style.outline='3px solid rgba(201,168,76,.85)';img.style.outlineOffset='2px';});
+    img.addEventListener('mouseleave',()=>{img.style.outline='';img.style.outlineOffset='';});
+  });
   // Form field overlays — transparent click-capture divs over each form input
   injectFormOverlays(doc);
 }
@@ -932,15 +917,27 @@ function switchImgTab(tab){
   }
 }
 
-// Lazy-init click handler (only once)
-let _focalInited=false;
+// Lazy-init drag+click handler (only once)
+let _focalInited=false,_focalDragging=false;
 function ensureFocalInit(){
   if(_focalInited)return;_focalInited=true;
-  document.getElementById('imgd-focal-wrap').addEventListener('click',function(e){
-    const r=this.getBoundingClientRect();
-    imgPendingPos={x:Math.round(((e.clientX-r.left)/r.width)*100),y:Math.round(((e.clientY-r.top)/r.height)*100)};
+  const wrap=document.getElementById('imgd-focal-wrap');
+  function setFromEvent(e){
+    const r=wrap.getBoundingClientRect();
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    const clientY=e.touches?e.touches[0].clientY:e.clientY;
+    imgPendingPos={
+      x:Math.min(100,Math.max(0,Math.round(((clientX-r.left)/r.width)*100))),
+      y:Math.min(100,Math.max(0,Math.round(((clientY-r.top)/r.height)*100)))
+    };
     updateFocalDot();
-  });
+  }
+  wrap.addEventListener('mousedown',e=>{_focalDragging=true;setFromEvent(e);e.preventDefault();});
+  wrap.addEventListener('mousemove',e=>{if(_focalDragging)setFromEvent(e);});
+  wrap.addEventListener('mouseup',()=>{_focalDragging=false;});
+  wrap.addEventListener('mouseleave',()=>{_focalDragging=false;});
+  wrap.addEventListener('touchstart',e=>{setFromEvent(e);e.preventDefault();},{passive:false});
+  wrap.addEventListener('touchmove',e=>{setFromEvent(e);e.preventDefault();},{passive:false});
 }
 
 function updateFocalDot(){
@@ -1079,8 +1076,8 @@ function handleDrop(ev,pid){
     pendingChanges[k]=d;updateDirty();
   };r.readAsDataURL(file);
 }
-function deleteProduct(pid,label){
-  if(!confirm('Remove "'+label+'" from storefront? (Can restore in Settings)'))return;
+function pauseProduct(pid,label){
+  if(!confirm('Pause "'+label+'"? It will be hidden from the store. You can unpause it anytime.'))return;
   kvContent['product_'+pid+'_removed']='true';
   pendingChanges['product_'+pid+'_removed']='true';
   updateDirty();buildProducts();saveAll();
@@ -1088,6 +1085,12 @@ function deleteProduct(pid,label){
 function restoreProduct(pid,label){
   delete kvContent['product_'+pid+'_removed'];
   pendingChanges['product_'+pid+'_removed']='false';
+  updateDirty();buildProducts();saveAll();
+}
+function pauseCustomProduct(id,name){
+  if(!confirm('Pause "'+name+'"? It will be hidden from the store. You can unpause it anytime.'))return;
+  kvContent['custom_product_'+id+'_paused']='true';
+  pendingChanges['custom_product_'+id+'_paused']='true';
   updateDirty();buildProducts();saveAll();
 }
 function addNpSizeRow(){
@@ -1166,7 +1169,7 @@ function buildProducts(){
           </div>
         </div>
         <div style="text-align:right;padding-top:.7rem;margin-top:.7rem;border-top:1px solid var(--border);">
-          <button class="btn-remove-product" onclick="deleteProduct('${p.id}','${p.label}')">🗑 Remove from Store</button>
+          <button class="btn-pause-product" onclick="pauseProduct('${p.id}','${p.label}')">⏸ Pause Product</button>
         </div>
       </div>
     </div>`;
@@ -1208,14 +1211,15 @@ function buildProducts(){
             </div>
           </div>
           <div style="text-align:right;padding-top:.7rem;margin-top:.7rem;border-top:1px solid var(--border);">
-            <button class="btn-remove-product" onclick="deleteCustomProduct('${id}','${escH(sN)}')">🗑 Delete Permanently</button>
+            <button class="btn-pause-product" onclick="pauseCustomProduct('${id}','${escH(sN)}')">⏸ Pause Product</button>
+            <button class="btn-remove-product" onclick="deleteCustomProduct('${id}','${escH(sN)}')">🗑 Delete</button>
           </div>
         </div>
       </div>`;
     }).join(''));
   }
   if(removed.length>0){
-    list.insertAdjacentHTML('beforeend',`<div class="removed-section"><button class="removed-section-toggle" onclick="const l=this.nextElementSibling;l.style.display=l.style.display==='none'?'flex':'none'">▶ Removed products (${removed.length})</button><div class="removed-list" style="display:none">${removed.map(p=>`<div class="removed-card"><span class="removed-card-name">${p.label}</span><button class="btn-restore" onclick="restoreProduct('${p.id}','${p.label}')">↩ Restore</button></div>`).join('')}</div></div>`);
+    list.insertAdjacentHTML('beforeend',`<div class="removed-section"><button class="removed-section-toggle" onclick="const l=this.nextElementSibling;l.style.display=l.style.display==='none'?'flex':'none'">▶ Paused products (${removed.length})</button><div class="removed-list" style="display:none">${removed.map(p=>`<div class="removed-card"><span class="removed-card-name">${p.label}</span><button class="btn-restore" onclick="restoreProduct('${p.id}','${p.label}')">▶ Unpause</button></div>`).join('')}</div></div>`);
   }
 }
 // COLORS
