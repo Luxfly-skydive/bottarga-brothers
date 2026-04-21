@@ -350,6 +350,19 @@
           }
         }
 
+        // Sold Out — disable cart button, leave product visible
+        if (data['product_' + key + '_sold_out'] === 'true') {
+          const atcBtn = root.querySelector('.bb-atc-btn');
+          const sel = root.querySelector('.bb-size-select');
+          if (atcBtn) { atcBtn.disabled = true; atcBtn.textContent = 'Sold Out'; atcBtn.style.cssText += ';opacity:.35;cursor:not-allowed;background:#444;color:#999;'; }
+          if (sel) sel.disabled = true;
+        }
+
+        // Paused or Removed — hide the card entirely from the shop page
+        if (data['product_' + key + '_removed'] === 'true' || data['product_' + key + '_deleted'] === 'true') {
+          root.style.display = 'none';
+        }
+
         if (sizes) {
           try {
             const parsed = JSON.parse(sizes);
