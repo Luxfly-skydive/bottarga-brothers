@@ -354,8 +354,10 @@
       </div>
       <div id="bb-cart-items" class="bb-cart-items"></div>
       <div id="bb-cart-footer" class="bb-cart-footer" style="display:none">
-        <div class="bb-cart-subtotal"><span>Subtotal</span><span id="bb-cart-total">$0.00</span></div>
-        <div class="bb-cart-shipping" id="bb-cart-shipping-msg">\ud83c\uddfa\ud83c\uddf8 Free USPS shipping on all US orders</div>
+        <div id="bb-cart-shipping-picker" style="display:none;margin-bottom:.75rem;"></div>
+        <div class="bb-cart-subtotal" style="margin-bottom:.3rem;"><span style="color:#888;font-size:.78rem;">Subtotal</span><span id="bb-cart-subtotal-only">$0.00</span></div>
+        <div class="bb-cart-subtotal"><span style="font-weight:700">Order Total</span><span id="bb-cart-total" style="color:var(--gold,#c9a84c);font-size:1.1rem">$0.00</span></div>
+        <div class="bb-cart-shipping" id="bb-cart-shipping-msg" style="display:none"></div>
         <button id="bb-checkout-btn" onclick="window._bbCart.checkout()">Proceed to Checkout</button>
       </div>
     `;
