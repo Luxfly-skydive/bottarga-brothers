@@ -294,6 +294,21 @@ export default {
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
           || 'Sorry, I could not process that. Please call us at 1-844-MAD-BROS.';
 
+        // ── Log transcript to KV (non-blocking, 90-day TTL) ─────────────────
+        try {
+          if (env.KV) {
+            const ts = Date.now();
+            const date = new Date().toISOString().slice(0, 10);
+            const rand = Math.random().toString(36).slice(2, 8);
+            const tKey = `transcript:bottarga:${date}:${ts}:${rand}`;
+            const userMsg = body.message || '';
+            ctx.waitUntil(env.KV.put(tKey, JSON.stringify({
+              ts, client: 'bottarga-brothers', user: userMsg, bot: reply,
+              page: request.headers.get('Referer') || '',
+            }), { expirationTtl: 7776000 }));
+          }
+        } catch (_) {}
+
         return Response.json({ reply }, { headers: CORS });
       } catch (e) {
         return Response.json(
