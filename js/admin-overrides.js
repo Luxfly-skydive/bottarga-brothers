@@ -429,7 +429,26 @@
         } catch(e) {}
       }
 
-      // ── Color / CSS variable overrides ─────────────────────────────
+      // Gallery overrides — update BB_GALLERIES from KV and re-render affected products
+  var PROD_ID_MAP={sardinian_gold:'sardinian-gold',classique:'boutargue-classique',
+    imperiale:'boutargue-imperiale',imperiale_aged:'boutargue-imperiale-aged',
+    greek:'greek-avgotaraho',ouro:'ouro-do-brasil',
+    aged_ouro:'aged-ouro-do-brasil',grated_gold:'grated-gold',
+    grated_pouch:'grated-bottarga-pouch'};
+  if(window.BB_GALLERIES&&window.BB_buildGallery){
+    Object.entries(PROD_ID_MAP).forEach(function([key,pid]){
+      var gj=data['gallery_'+key]; if(!gj)return;
+      try{
+        var imgs=JSON.parse(gj); if(!Array.isArray(imgs)||!imgs.length)return;
+        window.BB_GALLERIES[pid]=imgs;
+        var card=document.querySelector('[data-product="'+pid+'"]'); if(!card)return;
+        var ew=card.querySelector('.bb-gallery');
+        if(ew){var ri=document.createElement('img');ri.className='product-img';ri.src=imgs[0];ri.alt='';ew.parentNode.replaceChild(ri,ew);}
+        window.BB_buildGallery(card,imgs);
+      }catch(e){}
+    });
+  }
+  // ── Color / CSS variable overrides ─────────────────────────────
       const cssVarMap = {
         css_gold:       '--gold',
         css_dark:       '--black',

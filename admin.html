@@ -1024,7 +1024,15 @@ async function saveAll(){
       const v=el.type==='checkbox'?el.checked.toString():el.value;
       if(v!=='')toSave[k]=v;
     });
-    if(CUSTOM_PRODUCTS.length)toSave.custom_products_json=JSON.stringify(CUSTOM_PRODUCTS);
+        // Convert gallery textarea (newline-separated) to JSON array
+    PRODUCTS.forEach(p=>{
+      const gk='gallery_'+p.id;
+      if(toSave[gk]!==undefined&&toSave[gk]!==''){
+        const urls=toSave[gk].split('\n').map(s=>s.trim()).filter(s=>s.length>0);
+        toSave[gk]=urls.length?JSON.stringify(urls):'';
+      }
+    });
+if(CUSTOM_PRODUCTS.length)toSave.custom_products_json=JSON.stringify(CUSTOM_PRODUCTS);
     const res=await fetch(WORKER+'/content',{method:'POST',headers:authH(),body:JSON.stringify(toSave)});
     if(res.ok){
       kvContent=toSave;pendingChanges={};
@@ -1156,7 +1164,7 @@ function buildProducts(){
     try{if(kvContent['product_'+p.id+'_sizes'])ss=JSON.parse(kvContent['product_'+p.id+'_sizes']);}catch(e){}
     const sB=kvContent['product_'+p.id+'_badge']!==undefined?kvContent['product_'+p.id+'_badge']:p.defaultBadge;
     const sI=pendingChanges['product_'+p.id+'_img']||kvContent['product_'+p.id+'_img']||'';
-    const sN=kvContent['product_'+p.id+'_name']||'';const sD=kvContent['product_'+p.id+'_desc']||'';
+    const sN=kvContent['product_'+p.id+'_name']||'';const sD=kvContent['product_'+p.id+'_desc']||'';let sG=kvContent['gallery_'+p.id]||'';if(sG){try{sG=JSON.parse(sG).join('\n');}catch(e){}}
     return`<div class="product-card" id="pc_${p.id}">
       <div class="product-card-head" onclick="toggleCard('${p.id}')">
         <div><div class="product-card-title">${p.label}</div><div class="product-card-origin">${p.origin}</div></div>
@@ -1182,6 +1190,10 @@ function buildProducts(){
               <table class="size-table"><thead><tr><th>Size / Weight</th><th>Price</th><th></th></tr></thead>
               <tbody id="sizes_${p.id}">${ss.map((s,i)=>sizeRow(p.id,s.l,s.p,i)).join('')}</tbody></table>
               <button class="btn-add-size" onclick="addSizeRow('${p.id}')">+ Add Size</button>
+            </div>
+            <div class="field"><label>Gallery Images</label>
+              <textarea data-key="gallery_${p.id}" rows="3" placeholder="One image URL per line&#10;img/photo.jpg&#10;https://..." style="font-size:.73rem;font-family:monospace;min-height:56px;">${escH(sG)}</textarea>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:.2rem;">First URL = main image. One per line. Leave blank to keep defaults.</div>
             </div>
           </div>
         </div>
