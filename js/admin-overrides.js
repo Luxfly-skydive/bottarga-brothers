@@ -303,274 +303,302 @@
 
   // Pre-hide product images to prevent flash of old image while override loads
   const _$pImgs = document.querySelectorAll('.product-img');
-  _$pImgs.forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 0.15s ease'; });
+  _$pImgs.forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 0.18s ease'; });
   const _$showImgs = () => _$pImgs.forEach(el => { el.style.opacity = '1'; });
 
+  // Stable page name used for WYSIWYG keys (replace ALL dashes, not just first)
+  const _pageName = (window.location.pathname.split('/').pop() || 'index')
+    .replace('.html', '').replace(/-/g, '_');
+
+  // Cache key — bump version to invalidate stale caches if schema changes
+  const CACHE_KEY = 'bb_kv_v2';
+
+  // ── Core apply function — idempotent, safe to call multiple times ──────────
+  function applyContent(data) {
+    if (!data || Object.keys(data).length === 0) { _$showImgs(); return; }
+
+    // ── Text overrides ─────────────────────────────────────────────
+    Object.entries(TEXT_MAP).forEach(([key, sel]) => {
+      if (!data[key]) return;
+      document.querySelectorAll(sel).forEach(el => { el.textContent = data[key]; });
+    });
+
+    // Social links
+    if (data.social_ig) document.querySelectorAll('a[href*="instagram"]').forEach(a => a.href = data.social_ig);
+    if (data.social_fb) document.querySelectorAll('a[href*="facebook"]').forEach(a => a.href = data.social_fb);
+    if (data.newsletter_url) document.querySelectorAll('a[href*="list-manage"]').forEach(a => a.href = data.newsletter_url);
+
+    // ── Product overrides ──────────────────────────────────────────
+    PRODUCT_KEYS.forEach(key => {
+      const root = document.querySelector(PRODUCT_SELECTORS[key]);
+      if (!root) return;
+
+      const name  = data['product_' + key + '_name'];
+      const desc  = data['product_' + key + '_desc'];
+      const img   = data['product_' + key + '_img'];
+      const badge = data['product_' + key + '_badge'];
+      const sizes = data['product_' + key + '_sizes'];
+
+      if (name)  { const el = root.querySelector('.product-name');  if (el) el.textContent = name; }
+      if (desc)  { const el = root.querySelector('.product-desc');  if (el) el.textContent = desc; }
+      if (img)   { const el = root.querySelector('.product-img');   if (el) el.src = img; }
+
+      if (badge !== undefined) {
+        let badgeEl = root.querySelector('.product-badge');
+        if (badge === '') {
+          if (badgeEl) badgeEl.style.display = 'none';
+        } else {
+          if (!badgeEl) {
+            badgeEl = document.createElement('div');
+            badgeEl.className = 'product-badge';
+            root.querySelector('.product-info')?.prepend(badgeEl);
+          }
+          badgeEl.style.display = '';
+          badgeEl.textContent = badge;
+          if (badge === 'Sold Out') { badgeEl.style.background = 'var(--dark)'; badgeEl.style.color = 'var(--muted)'; badgeEl.style.border = '1px solid var(--muted)'; }
+          else if (badge === 'Limited') { badgeEl.style.background = 'var(--dark-mid)'; badgeEl.style.color = 'var(--gold)'; badgeEl.style.border = '1px solid var(--gold)'; }
+          else if (badge === 'On Sale') { badgeEl.style.background = 'var(--gold-dim)'; badgeEl.style.color = 'var(--cream)'; badgeEl.style.border = 'none'; }
+        }
+      }
+
+      // Sold Out — disable cart button, leave product visible
+      if (data['product_' + key + '_sold_out'] === 'true') {
+        const atcBtn = root.querySelector('.bb-atc-btn');
+        const sel = root.querySelector('.bb-size-select');
+        if (atcBtn) { atcBtn.disabled = true; atcBtn.textContent = 'Sold Out'; atcBtn.style.cssText += ';opacity:.35;cursor:not-allowed;background:#444;color:#999;'; }
+        if (sel) sel.disabled = true;
+      }
+
+      // Paused or Removed — hide the card entirely from the shop page
+      if (data['product_' + key + '_removed'] === 'true' || data['product_' + key + '_deleted'] === 'true') {
+        root.style.display = 'none';
+      }
+
+      if (sizes) {
+        try {
+          const parsed = JSON.parse(sizes);
+          if (!parsed.length) return;
+
+          // Update size table display
+          const sizeGrid = root.querySelector('[style*="grid-template-columns:1fr 1fr"]');
+          if (sizeGrid) {
+            sizeGrid.innerHTML = parsed.map(s =>
+              `<span style="color:var(--muted);">${s.l}</span><span style="color:var(--cream);text-align:right;">${s.p}</span>`
+            ).join('');
+          }
+
+          // Update select options display text (keeps Stripe price IDs as values)
+          const sel = root.querySelector('select.bb-size-select');
+          if (sel) {
+            const opts = sel.querySelectorAll('option');
+            parsed.forEach((s, i) => { if (opts[i]) opts[i].textContent = `${s.l} — ${s.p}`; });
+          }
+
+          // Update "From $X.XX" display price
+          const priceEl = root.querySelector('.product-price');
+          if (priceEl && parsed[0]) {
+            const from = parsed.length > 1;
+            priceEl.innerHTML = from
+              ? `<span class="from">From</span>${parsed[0].p}`
+              : parsed[0].p;
+          }
+        } catch (e) {}
+      }
+    });
+
+    // ── Custom products (user-created) ────────────────────────────
+    if (data.custom_products_json) {
+      try {
+        const custom = JSON.parse(data.custom_products_json);
+        const grid = document.querySelector('#productGrid');
+        if (grid && custom.length) {
+          custom.forEach(p => {
+            if (!p || !p.id) return;
+            if (document.getElementById('custom-' + p.id)) return; // already injected
+            const name  = data['custom_product_' + p.id + '_name']  || p.name  || '';
+            const desc  = data['custom_product_' + p.id + '_desc']  || p.desc  || '';
+            const badge = data['custom_product_' + p.id + '_badge'] !== undefined ? data['custom_product_' + p.id + '_badge'] : (p.badge || '');
+            const img   = data['custom_product_' + p.id + '_img']   || '';
+            let sizes   = p.sizes || [];
+            try { if (data['custom_product_' + p.id + '_sizes']) sizes = JSON.parse(data['custom_product_' + p.id + '_sizes']); } catch(e){}
+            const card = document.createElement('div');
+            card.className = 'product-card fade-up';
+            card.id = 'custom-' + p.id;
+            let badgeHtml = '';
+            if (badge === 'On Sale') badgeHtml = `<div class="product-badge" style="background:var(--gold-dim);color:var(--cream);">${badge}</div>`;
+            else if (badge === 'Limited') badgeHtml = `<div class="product-badge" style="background:var(--dark-mid);border:1px solid var(--gold);color:var(--gold);">${badge}</div>`;
+            else if (badge === 'Sold Out') badgeHtml = `<div class="product-badge" style="background:var(--dark);color:var(--muted);border:1px solid var(--muted);">${badge}</div>`;
+            else if (badge === 'New') badgeHtml = `<div class="product-badge" style="background:rgba(74,222,128,.15);color:#4ade80;">${badge}</div>`;
+            const priceHtml = sizes.length ? (sizes.length > 1 ? `<span class="from">From</span>${sizes[0].p}` : sizes[0].p) : '';
+            const selectHtml = sizes.length > 1
+              ? `<select class="bb-size-select">${sizes.map(s=>`<option value="${s.p}">${s.l} — ${s.p}</option>`).join('')}</select>`
+              : '';
+            card.innerHTML = `${badgeHtml}${img ? `<img class="product-img" src="${img}" alt="${name}"/>` : ''}<div class="product-info"><div class="product-name">${name}</div><p class="product-desc">${desc}</p>${selectHtml}<div class="product-price">${priceHtml}</div></div>`;
+            grid.appendChild(card);
+          });
+        }
+      } catch(e) {}
+    }
+
+    // Gallery overrides — update BB_GALLERIES from KV and re-render affected products
+    var PROD_ID_MAP={sardinian_gold:'sardinian-gold',classique:'boutargue-classique',
+      imperiale:'boutargue-imperiale',imperiale_aged:'boutargue-imperiale-aged',
+      greek:'greek-avgotaraho',ouro:'ouro-do-brasil',
+      aged_ouro:'aged-ouro-do-brasil',grated_gold:'grated-gold',
+      grated_pouch:'grated-bottarga-pouch'};
+    if(window.BB_GALLERIES&&window.BB_buildGallery){
+      Object.entries(PROD_ID_MAP).forEach(function([key,pid]){
+        var gj=data['gallery_'+key]; if(!gj)return;
+        try{
+          var imgs=JSON.parse(gj); if(!Array.isArray(imgs)||!imgs.length)return;
+          window.BB_GALLERIES[pid]=imgs;
+          var card=document.querySelector('[data-product="'+pid+'"]'); if(!card)return;
+          var ew=card.querySelector('.bb-gallery');
+          if(ew){var ri=document.createElement('img');ri.className='product-img';ri.src=imgs[0];ri.alt='';ew.parentNode.replaceChild(ri,ew);}
+          window.BB_buildGallery(card,imgs);
+        }catch(e){}
+      });
+    }
+
+    // ── Color / CSS variable overrides ─────────────────────────────
+    const cssVarMap = {
+      css_gold:       '--gold',
+      css_dark:       '--black',
+      css_dark_mid:   '--dark-mid',
+      css_cream:      '--cream',
+      css_muted:      '--muted',
+      css_gold_light: '--gold-light',
+    };
+    let cssText = '';
+    Object.entries(cssVarMap).forEach(([key, cssVar]) => {
+      if (data[key]) cssText += `${cssVar}:${data[key]};`;
+    });
+    if (cssText) {
+      // Guard: reuse existing style element so double-apply doesn't duplicate tags
+      let colorStyle = document.getElementById('admin-color-overrides');
+      if (!colorStyle) { colorStyle = document.createElement('style'); colorStyle.id = 'admin-color-overrides'; document.head.appendChild(colorStyle); }
+      colorStyle.textContent = `:root{${cssText}}`;
+    }
+
+    // ── Font overrides ─────────────────────────────────────────────
+    if (data.font_serif || data.font_sans) {
+      let fontCss = ':root{';
+      if (data.font_serif) fontCss += `--serif:${data.font_serif};`;
+      if (data.font_sans)  fontCss += `--sans:${data.font_sans};`;
+      fontCss += '}';
+      let fontStyle = document.getElementById('admin-font-overrides');
+      if (!fontStyle) { fontStyle = document.createElement('style'); fontStyle.id = 'admin-font-overrides'; document.head.appendChild(fontStyle); }
+      fontStyle.textContent = fontCss;
+    }
+
+    // ── WYSIWYG overrides (saved by new admin WYSIWYG editor) ─────
+    // Keys: _wysiwyg_[page] = JSON { selector: textValue }
+    //       _wysiwyg_[page]_imgs = JSON { selector: imgSrc }
+    const wKey    = '_wysiwyg_' + _pageName;
+    const wImgKey = '_wysiwyg_' + _pageName + '_imgs';
+    if (data[wKey]) {
+      try {
+        const overrides = JSON.parse(data[wKey]);
+        Object.entries(overrides).forEach(([sel, val]) => {
+          try { document.querySelectorAll(sel).forEach(el => { el.textContent = val; }); } catch(e) {}
+        });
+      } catch(e) {}
+    }
+    if (data[wImgKey]) {
+      try {
+        const imgOverrides = JSON.parse(data[wImgKey]);
+        Object.entries(imgOverrides).forEach(([sel, src]) => {
+          try { document.querySelectorAll(sel).forEach(el => {
+            // Already showing the right image — just ensure it's visible, no flicker
+            if (el.src === src || (el.src && el.src.split('?')[0] === src.split('?')[0])) {
+              el.style.opacity = '1';
+              return;
+            }
+            el.style.opacity = '0';
+            el.style.transition = 'opacity 0.18s ease';
+            el.src = src;
+            const _revealImg = () => { el.style.opacity = '1'; };
+            // If browser already has it decoded (cache hit), reveal immediately
+            if (el.complete && el.naturalWidth) { _revealImg(); }
+            else {
+              el.addEventListener('load',  _revealImg, { once: true });
+              el.addEventListener('error', _revealImg, { once: true });
+            }
+          }); } catch(e) {}
+        });
+      } catch(e) {}
+    }
+
+    // ── Form placeholder overrides (contact.html) ─────────────────
+    const FORM_PH_MAP = {
+      contact_ph_firstName: { sel: '#firstName', attr: 'placeholder' },
+      contact_ph_lastName:  { sel: '#lastName',  attr: 'placeholder' },
+      contact_ph_email:     { sel: '#email',     attr: 'placeholder' },
+      contact_ph_message:   { sel: '#message',   attr: 'placeholder' },
+    };
+    Object.entries(FORM_PH_MAP).forEach(([key, {sel, attr}]) => {
+      if (data[key]) {
+        document.querySelectorAll(sel).forEach(el => el.setAttribute(attr, data[key]));
+      }
+    });
+
+    // ── CSS style overrides (object-position, zoom, etc.) ─────────
+    const wStyle = data['_wysiwyg_' + _pageName + '_style'];
+    if (wStyle) {
+      try {
+        Object.entries(JSON.parse(wStyle)).forEach(([sel, styles]) => {
+          try { document.querySelectorAll(sel).forEach(el => Object.assign(el.style, styles)); } catch(e) {}
+        });
+      } catch(e) {}
+    }
+
+    // ── Away Banner ────────────────────────────────────────────────
+    // Guard: never inject twice if applyContent is called more than once
+    if (data.away_banner_active === 'true' && data.away_banner_text
+        && !window.location.pathname.includes('admin')
+        && !document.getElementById('bb-away-banner')
+        && !sessionStorage.getItem('bb_banner_dismissed')) {
+      const bg = data.away_banner_color || '#c9a84c';
+      const fg = (bg === '#c9a84c' || bg === 'gold') ? '#0a0a08' : '#f5f0e8';
+      const b  = document.createElement('div');
+      b.id     = 'bb-away-banner';
+      b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:99999;background:${bg};` +
+        `color:${fg};padding:10px 48px 10px 16px;font-size:13.5px;` +
+        `font-family:var(--sans,sans-serif);line-height:1.4;text-align:center;` +
+        `box-shadow:0 2px 8px rgba(0,0,0,.4);`;
+      b.textContent = data.away_banner_text;
+      const x = document.createElement('button');
+      x.textContent = '×';
+      x.setAttribute('aria-label', 'Dismiss');
+      x.style.cssText = `position:absolute;right:14px;top:50%;transform:translateY(-50%);` +
+        `background:none;border:none;font-size:22px;line-height:1;cursor:pointer;` +
+        `padding:0 4px;color:inherit;opacity:.75;`;
+      x.onclick = () => {
+        b.remove();
+        document.body.style.paddingTop = '';
+        sessionStorage.setItem('bb_banner_dismissed', '1');
+      };
+      b.appendChild(x);
+      document.body.prepend(b);
+      requestAnimationFrame(() => { document.body.style.paddingTop = b.offsetHeight + 'px'; });
+    }
+    _$showImgs();
+  } // end applyContent
+
+  // ── Apply from sessionStorage cache instantly (zero-flash on refresh) ──────
+  // The cache is written after every successful fetch below.
+  // On the NEXT load, this runs synchronously — images are already hidden by the
+  // <head> pre-hide script — and overrides are applied before first paint completes.
+  let _cached = null;
+  try { _cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null'); } catch(e) {}
+  if (_cached) applyContent(_cached);
+
+  // ── Fetch fresh data from KV, update cache, re-apply ──────────────────────
   fetch(WORKER)
     .then(r => r.json())
     .then(data => {
-      if (!data || Object.keys(data).length === 0) { _$showImgs(); return; }
-
-      // ── Text overrides ─────────────────────────────────────────────
-      Object.entries(TEXT_MAP).forEach(([key, sel]) => {
-        if (!data[key]) return;
-        document.querySelectorAll(sel).forEach(el => { el.textContent = data[key]; });
-      });
-
-      // Social links
-      if (data.social_ig) document.querySelectorAll('a[href*="instagram"]').forEach(a => a.href = data.social_ig);
-      if (data.social_fb) document.querySelectorAll('a[href*="facebook"]').forEach(a => a.href = data.social_fb);
-      if (data.newsletter_url) document.querySelectorAll('a[href*="list-manage"]').forEach(a => a.href = data.newsletter_url);
-
-      // ── Product overrides ──────────────────────────────────────────
-      PRODUCT_KEYS.forEach(key => {
-        const root = document.querySelector(PRODUCT_SELECTORS[key]);
-        if (!root) return;
-
-        const name  = data['product_' + key + '_name'];
-        const desc  = data['product_' + key + '_desc'];
-        const img   = data['product_' + key + '_img'];
-        const badge = data['product_' + key + '_badge'];
-        const sizes = data['product_' + key + '_sizes'];
-
-        if (name)  { const el = root.querySelector('.product-name');  if (el) el.textContent = name; }
-        if (desc)  { const el = root.querySelector('.product-desc');  if (el) el.textContent = desc; }
-        if (img)   { const el = root.querySelector('.product-img');   if (el) el.src = img; }
-
-        if (badge !== undefined) {
-          let badgeEl = root.querySelector('.product-badge');
-          if (badge === '') {
-            if (badgeEl) badgeEl.style.display = 'none';
-          } else {
-            if (!badgeEl) {
-              badgeEl = document.createElement('div');
-              badgeEl.className = 'product-badge';
-              root.querySelector('.product-info')?.prepend(badgeEl);
-            }
-            badgeEl.style.display = '';
-            badgeEl.textContent = badge;
-            if (badge === 'Sold Out') { badgeEl.style.background = 'var(--dark)'; badgeEl.style.color = 'var(--muted)'; badgeEl.style.border = '1px solid var(--muted)'; }
-            else if (badge === 'Limited') { badgeEl.style.background = 'var(--dark-mid)'; badgeEl.style.color = 'var(--gold)'; badgeEl.style.border = '1px solid var(--gold)'; }
-            else if (badge === 'On Sale') { badgeEl.style.background = 'var(--gold-dim)'; badgeEl.style.color = 'var(--cream)'; badgeEl.style.border = 'none'; }
-          }
-        }
-
-        // Sold Out — disable cart button, leave product visible
-        if (data['product_' + key + '_sold_out'] === 'true') {
-          const atcBtn = root.querySelector('.bb-atc-btn');
-          const sel = root.querySelector('.bb-size-select');
-          if (atcBtn) { atcBtn.disabled = true; atcBtn.textContent = 'Sold Out'; atcBtn.style.cssText += ';opacity:.35;cursor:not-allowed;background:#444;color:#999;'; }
-          if (sel) sel.disabled = true;
-        }
-
-        // Paused or Removed — hide the card entirely from the shop page
-        if (data['product_' + key + '_removed'] === 'true' || data['product_' + key + '_deleted'] === 'true') {
-          root.style.display = 'none';
-        }
-
-        if (sizes) {
-          try {
-            const parsed = JSON.parse(sizes);
-            if (!parsed.length) return;
-
-            // Update size table display
-            const sizeGrid = root.querySelector('[style*="grid-template-columns:1fr 1fr"]');
-            if (sizeGrid) {
-              sizeGrid.innerHTML = parsed.map(s =>
-                `<span style="color:var(--muted);">${s.l}</span><span style="color:var(--cream);text-align:right;">${s.p}</span>`
-              ).join('');
-            }
-
-            // Update select options display text (keeps Stripe price IDs as values)
-            const sel = root.querySelector('select.bb-size-select');
-            if (sel) {
-              const opts = sel.querySelectorAll('option');
-              parsed.forEach((s, i) => { if (opts[i]) opts[i].textContent = `${s.l} — ${s.p}`; });
-            }
-
-            // Update "From $X.XX" display price
-            const priceEl = root.querySelector('.product-price');
-            if (priceEl && parsed[0]) {
-              const from = parsed.length > 1;
-              priceEl.innerHTML = from
-                ? `<span class="from">From</span>${parsed[0].p}`
-                : parsed[0].p;
-            }
-          } catch (e) {}
-        }
-      });
-
-      // ── Custom products (user-created) ────────────────────────────
-      if (data.custom_products_json) {
-        try {
-          const custom = JSON.parse(data.custom_products_json);
-          const grid = document.querySelector('#productGrid');
-          if (grid && custom.length) {
-            custom.forEach(p => {
-              if (!p || !p.id) return;
-              if (document.getElementById('custom-' + p.id)) return; // already injected
-              const name  = data['custom_product_' + p.id + '_name']  || p.name  || '';
-              const desc  = data['custom_product_' + p.id + '_desc']  || p.desc  || '';
-              const badge = data['custom_product_' + p.id + '_badge'] !== undefined ? data['custom_product_' + p.id + '_badge'] : (p.badge || '');
-              const img   = data['custom_product_' + p.id + '_img']   || '';
-              let sizes   = p.sizes || [];
-              try { if (data['custom_product_' + p.id + '_sizes']) sizes = JSON.parse(data['custom_product_' + p.id + '_sizes']); } catch(e){}
-              const card = document.createElement('div');
-              card.className = 'product-card fade-up';
-              card.id = 'custom-' + p.id;
-              let badgeHtml = '';
-              if (badge === 'On Sale') badgeHtml = `<div class="product-badge" style="background:var(--gold-dim);color:var(--cream);">${badge}</div>`;
-              else if (badge === 'Limited') badgeHtml = `<div class="product-badge" style="background:var(--dark-mid);border:1px solid var(--gold);color:var(--gold);">${badge}</div>`;
-              else if (badge === 'Sold Out') badgeHtml = `<div class="product-badge" style="background:var(--dark);color:var(--muted);border:1px solid var(--muted);">${badge}</div>`;
-              else if (badge === 'New') badgeHtml = `<div class="product-badge" style="background:rgba(74,222,128,.15);color:#4ade80;">${badge}</div>`;
-              const priceHtml = sizes.length ? (sizes.length > 1 ? `<span class="from">From</span>${sizes[0].p}` : sizes[0].p) : '';
-              const selectHtml = sizes.length > 1
-                ? `<select class="bb-size-select">${sizes.map(s=>`<option value="${s.p}">${s.l} — ${s.p}</option>`).join('')}</select>`
-                : '';
-              card.innerHTML = `${badgeHtml}${img ? `<img class="product-img" src="${img}" alt="${name}"/>` : ''}<div class="product-info"><div class="product-name">${name}</div><p class="product-desc">${desc}</p>${selectHtml}<div class="product-price">${priceHtml}</div></div>`;
-              grid.appendChild(card);
-            });
-          }
-        } catch(e) {}
-      }
-
-      // Gallery overrides — update BB_GALLERIES from KV and re-render affected products
-  var PROD_ID_MAP={sardinian_gold:'sardinian-gold',classique:'boutargue-classique',
-    imperiale:'boutargue-imperiale',imperiale_aged:'boutargue-imperiale-aged',
-    greek:'greek-avgotaraho',ouro:'ouro-do-brasil',
-    aged_ouro:'aged-ouro-do-brasil',grated_gold:'grated-gold',
-    grated_pouch:'grated-bottarga-pouch'};
-  if(window.BB_GALLERIES&&window.BB_buildGallery){
-    Object.entries(PROD_ID_MAP).forEach(function([key,pid]){
-      var gj=data['gallery_'+key]; if(!gj)return;
-      try{
-        var imgs=JSON.parse(gj); if(!Array.isArray(imgs)||!imgs.length)return;
-        window.BB_GALLERIES[pid]=imgs;
-        var card=document.querySelector('[data-product="'+pid+'"]'); if(!card)return;
-        var ew=card.querySelector('.bb-gallery');
-        if(ew){var ri=document.createElement('img');ri.className='product-img';ri.src=imgs[0];ri.alt='';ew.parentNode.replaceChild(ri,ew);}
-        window.BB_buildGallery(card,imgs);
-      }catch(e){}
-    });
-  }
-  // ── Color / CSS variable overrides ─────────────────────────────
-      const cssVarMap = {
-        css_gold:       '--gold',
-        css_dark:       '--black',
-        css_dark_mid:   '--dark-mid',
-        css_cream:      '--cream',
-        css_muted:      '--muted',
-        css_gold_light: '--gold-light',
-      };
-      let cssText = '';
-      Object.entries(cssVarMap).forEach(([key, cssVar]) => {
-        if (data[key]) cssText += `${cssVar}:${data[key]};`;
-      });
-      if (cssText) {
-        const style = document.createElement('style');
-        style.id = 'admin-color-overrides';
-        style.textContent = `:root{${cssText}}`;
-        document.head.appendChild(style);
-      }
-
-      // ── Font overrides ─────────────────────────────────────────────
-      if (data.font_serif || data.font_sans) {
-        let fontCss = ':root{';
-        if (data.font_serif) fontCss += `--serif:${data.font_serif};`;
-        if (data.font_sans)  fontCss += `--sans:${data.font_sans};`;
-        fontCss += '}';
-        const style = document.createElement('style');
-        style.id = 'admin-font-overrides';
-        style.textContent = fontCss;
-        document.head.appendChild(style);
-      }
-
-      // ── WYSIWYG overrides (saved by new admin WYSIWYG editor) ─────
-      // Keys: _wysiwyg_[page] = JSON { selector: textValue }
-      //       _wysiwyg_[page]_imgs = JSON { selector: imgSrc }
-      const pageName = window.location.pathname.split('/').pop().replace('.html','').replace('-','_') || 'index';
-      const wKey = '_wysiwyg_' + pageName;
-      const wImgKey = '_wysiwyg_' + pageName + '_imgs';
-      if (data[wKey]) {
-        try {
-          const overrides = JSON.parse(data[wKey]);
-          Object.entries(overrides).forEach(([sel, val]) => {
-            try { document.querySelectorAll(sel).forEach(el => { el.textContent = val; }); } catch(e) {}
-          });
-        } catch(e) {}
-      }
-      if (data[wImgKey]) {
-        try {
-          const imgOverrides = JSON.parse(data[wImgKey]);
-          Object.entries(imgOverrides).forEach(([sel, src]) => {
-            try { document.querySelectorAll(sel).forEach(el => {
-              el.style.opacity = '0';
-              el.style.transition = 'opacity 0.15s ease';
-              el.src = src;
-              el.addEventListener('load', () => { el.style.opacity = '1'; }, { once: true });
-            }); } catch(e) {}
-          });
-        } catch(e) {}
-      }
-
-      // ── Form placeholder overrides (contact.html) ─────────────────
-      // Placeholders are HTML attributes — can't be set via textContent
-      const FORM_PH_MAP = {
-        contact_ph_firstName: { sel: '#firstName', attr: 'placeholder' },
-        contact_ph_lastName:  { sel: '#lastName',  attr: 'placeholder' },
-        contact_ph_email:     { sel: '#email',     attr: 'placeholder' },
-        contact_ph_message:   { sel: '#message',   attr: 'placeholder' },
-      };
-      Object.entries(FORM_PH_MAP).forEach(([key, {sel, attr}]) => {
-        if (data[key]) {
-          document.querySelectorAll(sel).forEach(el => el.setAttribute(attr, data[key]));
-        }
-      });
-
-      // ── CSS style overrides (object-position, zoom, etc.) ─────────
-      // Keys: _wysiwyg_[page]_style = JSON { selector: { prop: val } }
-      const wStyle = data['_wysiwyg_' + pageName + '_style'];
-      if (wStyle) {
-        try {
-          Object.entries(JSON.parse(wStyle)).forEach(([sel, styles]) => {
-            try { document.querySelectorAll(sel).forEach(el => Object.assign(el.style, styles)); } catch(e) {}
-          });
-        } catch(e) {}
-      }
-
-      // ── Away Banner ────────────────────────────────────────────────
-      // Keys: away_banner_active ('true'/'false'), away_banner_text, away_banner_color
-      if (data.away_banner_active === 'true' && data.away_banner_text
-          && !window.location.pathname.includes('admin')
-          && !sessionStorage.getItem('bb_banner_dismissed')) {
-        const bg   = data.away_banner_color || '#c9a84c';
-        // Determine text contrast: gold bg → dark text, dark bg → cream text
-        const fg   = (bg === '#c9a84c' || bg === 'gold') ? '#0a0a08' : '#f5f0e8';
-        const b    = document.createElement('div');
-        b.id       = 'bb-away-banner';
-        b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:99999;background:${bg};` +
-          `color:${fg};padding:10px 48px 10px 16px;font-size:13.5px;` +
-          `font-family:var(--sans,sans-serif);line-height:1.4;text-align:center;` +
-          `box-shadow:0 2px 8px rgba(0,0,0,.4);`;
-        b.textContent = data.away_banner_text;
-        const x = document.createElement('button');
-        x.textContent = '×';
-        x.setAttribute('aria-label', 'Dismiss');
-        x.style.cssText = `position:absolute;right:14px;top:50%;transform:translateY(-50%);` +
-          `background:none;border:none;font-size:22px;line-height:1;cursor:pointer;` +
-          `padding:0 4px;color:inherit;opacity:.75;`;
-        x.onclick = () => {
-          b.remove();
-          document.body.style.paddingTop = '';
-          sessionStorage.setItem('bb_banner_dismissed', '1');
-        };
-        b.appendChild(x);
-        document.body.prepend(b);
-        requestAnimationFrame(() => {
-          document.body.style.paddingTop = b.offsetHeight + 'px';
-        });
-      }
-      _$showImgs();
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {}
+      applyContent(data);
     })
     .catch(() => { _$showImgs(); }); // never break the site
 })();
