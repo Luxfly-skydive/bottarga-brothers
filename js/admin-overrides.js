@@ -348,7 +348,7 @@
 
       if (name)  { const el = root.querySelector('.product-name');  if (el) el.textContent = name; }
       if (desc)  { const el = root.querySelector('.product-desc');  if (el) el.textContent = desc; }
-      if (img)   { const el = root.querySelector('.product-img');   if (el) el.src = img; }
+      if (img && revealImages) { const el = root.querySelector('.product-img'); if (el) el.src = img; }
 
       if (badge !== undefined) {
         let badgeEl = root.querySelector('.product-badge');
@@ -511,7 +511,7 @@
         });
       } catch(e) {}
     }
-    if (data[wImgKey]) {
+    if (revealImages && data[wImgKey]) {
       try {
         const imgOverrides = JSON.parse(data[wImgKey]);
         Object.entries(imgOverrides).forEach(([sel, src]) => {
