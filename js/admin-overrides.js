@@ -321,8 +321,8 @@
   const CACHE_KEY = 'bb_kv_v2';
 
   // ── Core apply function — idempotent, safe to call multiple times ──────────
-  function applyContent(data) {
-    if (!data || Object.keys(data).length === 0) { _$showImgs(); return; }
+  function applyContent(data, revealImages = true) {
+    if (!data || Object.keys(data).length === 0) { if (revealImages) _$showImgs(); return; }
 
     // ── Text overrides ─────────────────────────────────────────────
     Object.entries(TEXT_MAP).forEach(([key, sel]) => {
@@ -589,7 +589,7 @@
       document.body.prepend(b);
       requestAnimationFrame(() => { document.body.style.paddingTop = b.offsetHeight + 'px'; });
     }
-    _$showImgs();
+    if (revealImages) _$showImgs();
   } // end applyContent
 
   // ── Apply from sessionStorage cache instantly (zero-flash on refresh) ──────
@@ -598,14 +598,21 @@
   // <head> pre-hide script — and overrides are applied before first paint completes.
   let _cached = null;
   try { _cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null'); } catch(e) {}
-  if (_cached) applyContent(_cached);
+  // Apply text/color overrides from cache immediately — but DO NOT reveal images yet.
+  // Images stay hidden until the fresh KV fetch confirms the correct image src.
+  // This prevents any flash of a stale (previously-replaced) image.
+  if (_cached) applyContent(_cached, false);
+
+  // Safety net: reveal after 4s even if the fetch hangs (bad connection, worker down)
+  const _revealTimer = setTimeout(_$showImgs, 4000);
 
   // ── Fetch fresh data from KV, update cache, re-apply ──────────────────────
   fetch(WORKER)
     .then(r => r.json())
     .then(data => {
+      clearTimeout(_revealTimer);
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {}
-      applyContent(data);
+      applyContent(data, true); // fresh data confirmed — NOW reveal images
     })
-    .catch(() => { _$showImgs(); }); // never break the site
+    .catch(() => { clearTimeout(_revealTimer); _$showImgs(); }); // never break the site
 })();
