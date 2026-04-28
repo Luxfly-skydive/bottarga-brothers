@@ -59,7 +59,8 @@
 <link href="https://bottargabrothers.com/fr/kosher.html" hreflang="fr" rel="alternate"/>
 <link href="https://bottargabrothers.com/kosher.html" hreflang="x-default" rel="alternate"/>
   <!-- bb-img-preload -->
-  <script>(function(){var css='.product-img{opacity:0;transition:opacity .18s ease}';try{var c=JSON.parse(sessionStorage.getItem('bb_kv_v2')||'null');if(c){var pg=(location.pathname.split('/').pop()||'index').replace('.html','').replace(/-/g,'_');var wk='_wysiwyg_'+pg+'_imgs';if(c[wk]){try{Object.keys(JSON.parse(c[wk])).forEach(function(sel){css+=sel+'{opacity:0;transition:opacity .18s ease}';})}catch(e){}}}}catch(e){}var s=document.createElement('style');s.id='bb-img-preload';s.textContent=css;document.head.appendChild(s);})();</script>
+  <style id="bb-img-preload">.product-img{opacity:0;transition:opacity .18s ease}</style>
+  <script>(function(){try{var c=JSON.parse(sessionStorage.getItem('bb_kv_v2')||'null');if(c){var pg=(location.pathname.split('/').pop()||'index').replace('.html','').replace(/-/g,'_');var wk='_wysiwyg_'+pg+'_imgs';if(c[wk]){var s=document.getElementById('bb-img-preload');try{Object.keys(JSON.parse(c[wk])).forEach(function(sel){s.textContent+=sel+'{opacity:0;transition:opacity .18s ease}';});}catch(e){}}}}catch(e){}})();</script>
 </head>
 <body>
 <!-- GTM noscript fallback (uncomment with head script above):
