@@ -301,10 +301,17 @@
     grated_pouch:           '#grated-pouch',
   };
 
-  // Pre-hide product images to prevent flash of old image while override loads
-  const _$pImgs = document.querySelectorAll('.product-img');
-  _$pImgs.forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 0.18s ease'; });
-  const _$showImgs = () => _$pImgs.forEach(el => { el.style.opacity = '1'; });
+  // _$showImgs re-queries every time so dynamically-added images are always revealed.
+  // The <head> bb-img-preload script unconditionally hides .product-img before first paint.
+  const _$showImgs = () => {
+    document.querySelectorAll('.product-img').forEach(el => {
+      el.style.opacity = '1';
+      el.style.transition = 'opacity 0.18s ease';
+    });
+    // Remove the preload style tag so newly injected images are visible by default
+    const ps = document.getElementById('bb-img-preload');
+    if (ps) ps.textContent = '';
+  };
 
   // Stable page name used for WYSIWYG keys (replace ALL dashes, not just first)
   const _pageName = (window.location.pathname.split('/').pop() || 'index')
