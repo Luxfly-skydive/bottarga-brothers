@@ -1344,12 +1344,17 @@ function buildProducts(){
     const sB=kvContent['product_'+p.id+'_badge']!==undefined?kvContent['product_'+p.id+'_badge']:p.defaultBadge;
     const sI=pendingChanges['product_'+p.id+'_img']||kvContent['product_'+p.id+'_img']||'';
     const sN=kvContent['product_'+p.id+'_name']||'';const sD=kvContent['product_'+p.id+'_desc']||'';let sG=kvContent['gallery_'+p.id]||'';if(sG){try{sG=JSON.parse(sG).join('\n');}catch(e){}}
-    return`<div class="product-card" id="pc_${p.id}">
+    return`<div class="product-card open" id="pc_${p.id}">
       <div class="product-card-head" onclick="toggleCard('${p.id}')">
         <div><div class="product-card-title">${p.label}</div><div class="product-card-origin">${p.origin}</div></div>
         <span class="product-card-chevron">▼</span>
       </div>
       <div class="product-card-body">
+        ${(PRODUCT_PRICE_IDS[p.id]||[]).length>0?`<div class="field" style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+          <label style="font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.06em;">📦 STOCK / INVENTORY</label>
+          <div class="stock-size-grid">${(PRODUCT_PRICE_IDS[p.id]||[]).map(s=>`<div class="stock-row"><span class="stock-size-label">${s.label}</span><input type="number" min="0" step="1" class="stock-qty-input" data-price-id="${s.id}" placeholder="∞" value="${stockData[s.id]!==null&&stockData[s.id]!==undefined?stockData[s.id]:''}"/><span class="stock-unit">units</span></div>`).join('')}</div>
+          <div style="font-size:.63rem;color:var(--muted);margin-top:.3rem;">Blank = unlimited &nbsp;|&nbsp; 0 = out of stock &nbsp;|&nbsp; ≤10 shows red warning on shop page. Saved with <em>Save All</em>.</div>
+        </div>`:''}
         <div class="product-card-grid">
           <div>
             <div class="img-drop" id="drop_${p.id}" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'${p.id}')">
@@ -1374,11 +1379,6 @@ function buildProducts(){
               <textarea data-key="gallery_${p.id}" rows="3" placeholder="One image URL per line&#10;img/photo.jpg&#10;https://..." style="font-size:.73rem;font-family:monospace;min-height:56px;">${escH(sG)}</textarea>
               <div style="font-size:.63rem;color:var(--muted);margin-top:.2rem;">First URL = main image. One per line. Leave blank to keep defaults.</div>
             </div>
-            ${(PRODUCT_PRICE_IDS[p.id]||[]).length>0?`<div class="field">
-              <label>Stock / Inventory</label>
-              <div class="stock-size-grid">${(PRODUCT_PRICE_IDS[p.id]||[]).map(s=>`<div class="stock-row"><span class="stock-size-label">${s.label}</span><input type="number" min="0" step="1" class="stock-qty-input" data-price-id="${s.id}" placeholder="∞" value="${stockData[s.id]!==null&&stockData[s.id]!==undefined?stockData[s.id]:''}"/><span class="stock-unit">units</span></div>`).join('')}</div>
-              <div style="font-size:.63rem;color:var(--muted);margin-top:.3rem;">Blank&nbsp;=&nbsp;unlimited &nbsp;|&nbsp; 0&nbsp;=&nbsp;out&nbsp;of&nbsp;stock. Saved with&nbsp;<em>Save All</em>.</div>
-            </div>`:''}
           </div>
         </div>
         <div style="text-align:right;padding-top:.7rem;margin-top:.7rem;border-top:1px solid var(--border);">
