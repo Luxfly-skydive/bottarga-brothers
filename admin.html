@@ -1352,7 +1352,7 @@ function buildProducts(){
       <div class="product-card-body">
         ${(PRODUCT_PRICE_IDS[p.id]||[]).length>0?`<div class="field" style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
           <label style="font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.06em;">📦 STOCK / INVENTORY</label>
-          <div class="stock-size-grid">${(PRODUCT_PRICE_IDS[p.id]||[]).map(s=>`<div class="stock-row"><span class="stock-size-label">${s.label}</span><input type="number" min="0" step="1" class="stock-qty-input" data-price-id="${s.id}" placeholder="∞" value="${stockData[s.id]!==null&&stockData[s.id]!==undefined?stockData[s.id]:''}"/><span class="stock-unit">units</span></div>`).join('')}</div>
+          <div class="stock-size-grid">${(PRODUCT_PRICE_IDS[p.id]||[]).map(s=>`<div class="stock-row"><span class="stock-size-label">${s.label}</span><input type="number" min="0" step="1" class="stock-qty-input" data-price-id="${s.id}" placeholder="∞" value="${stockData[s.id]!==null&&stockData[s.id]!==undefined?stockData[s.id]:''}" oninput="updateDirty()"/><span class="stock-unit">units</span></div>`).join('')}</div>
           <div style="font-size:.63rem;color:var(--muted);margin-top:.3rem;">Blank = unlimited &nbsp;|&nbsp; 0 = out of stock &nbsp;|&nbsp; ≤10 shows red warning on shop page. Saved with <em>Save All</em>.</div>
         </div>`:''}
         <div class="product-card-grid">

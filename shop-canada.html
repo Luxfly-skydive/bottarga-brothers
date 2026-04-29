@@ -61,6 +61,19 @@
   <!-- bb-img-preload -->
   <style id="bb-img-preload">.product-img{opacity:0;transition:opacity .18s ease}</style>
   <script>(function(){try{var c=JSON.parse(sessionStorage.getItem('bb_kv_v2')||'null');if(c){var pg=(location.pathname.split('/').pop()||'index').replace('.html','').replace(/-/g,'_');var wk='_wysiwyg_'+pg+'_imgs';if(c[wk]){var s=document.getElementById('bb-img-preload');try{Object.keys(JSON.parse(c[wk])).forEach(function(sel){s.textContent+=sel+'{opacity:0;transition:opacity .18s ease}';});}catch(e){}}}}catch(e){}})();</script>
+  <style>
+.bb-gallery{position:relative;overflow:hidden;}
+.bb-gallery-main{position:relative;overflow:hidden;background:#0e0c09;}
+.bb-gallery-img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:crosshair;transition:transform .3s;}
+.bb-gallery-main:hover .bb-gallery-img{transform:scale(1.03);}
+.bb-gal-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.55);border:none;color:#fff;font-size:1.3rem;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;opacity:0;transition:opacity .2s;}
+.bb-gallery-main:hover .bb-gal-btn{opacity:1;}
+.bb-gal-prev{left:8px;}.bb-gal-next{right:8px;}
+.bb-gal-thumbs{display:flex;gap:5px;padding:6px 0 0;overflow-x:auto;scrollbar-width:none;}
+.bb-gal-thumbs::-webkit-scrollbar{display:none;}
+.bb-gal-thumb{width:52px;height:52px;object-fit:cover;border-radius:3px;cursor:pointer;opacity:.55;border:1.5px solid transparent;transition:opacity .15s,border-color .15s;flex-shrink:0;}
+.bb-gal-thumb.active{opacity:1;border-color:var(--gold,#c9a84c);}
+  </style>
 </head>
 <body>
 <!-- GTM noscript fallback (uncomment with head script above):
@@ -385,6 +398,83 @@
 <script src="js/chatbot.js"></script>
 <script src="js/admin-overrides.js"></script>
 <script src="js/stock.js"></script>
+<script>
+(function(){
+  window.BB_GALLERIES={
+    'sardinia-ca':  ['img/tp_sard_gold_logo.jpg','img/sardinian_40off.jpg','img/sardin_square.jpg'],
+    'imperiale-ca': ['img/imperiale_square.jpg','img/boutargue_kasher_front-copy.jpg'],
+    'brazil-ca':    ['img/50gr_square.jpg','img/1_brazilian_bottarga-copy-1.jpg','img/brazil_square.jpg'],
+    'grated-ca':    ['img/cropped-whole_grated_bottarga-scaled-2.jpg','img/new_box_grated.jpg'],
+    'greece-ca':    ['img/greek_avgotaraho.jpg','img/greek_avgotaharo.jpg'],
+    'egypt-ca':     ['img/1b_egyptian-bottarga.jpg']
+  };
+
+  function attachZoom(container, imgEl) {
+    container.style.overflow = 'hidden';
+    container.style.cursor = 'zoom-in';
+    container.addEventListener('mousemove', function(e) {
+      var r = container.getBoundingClientRect();
+      var px = ((e.clientX - r.left) / r.width  * 100).toFixed(2);
+      var py = ((e.clientY - r.top)  / r.height * 100).toFixed(2);
+      imgEl.style.transformOrigin = px + '% ' + py + '%';
+      imgEl.style.transform = 'scale(2.2)';
+      imgEl.style.transition = 'transform 0.1s ease';
+    });
+    container.addEventListener('mouseleave', function() {
+      imgEl.style.transform = '';
+      imgEl.style.transformOrigin = '';
+    });
+  }
+
+  window.BB_buildGallery = function(card, imgs) {
+    var imgEl = card.querySelector('.product-img');
+    if (!imgEl) return;
+    if (imgs.length < 2) {
+      attachZoom(imgEl.parentNode || card, imgEl);
+      return;
+    }
+    var cur = 0;
+    var wrap = document.createElement('div'); wrap.className = 'bb-gallery';
+    var main = document.createElement('div'); main.className = 'bb-gallery-main';
+    var mImg = document.createElement('img');
+    mImg.className = 'bb-gallery-img product-img'; mImg.src = imgs[0]; mImg.alt = imgEl.alt;
+    var prev = document.createElement('button'); prev.className = 'bb-gal-btn bb-gal-prev'; prev.innerHTML = '&#8249;';
+    prev.addEventListener('click', function(e) { e.stopPropagation(); go(cur - 1); });
+    var next = document.createElement('button'); next.className = 'bb-gal-btn bb-gal-next'; next.innerHTML = '&#8250;';
+    next.addEventListener('click', function(e) { e.stopPropagation(); go(cur + 1); });
+    main.appendChild(mImg); main.appendChild(prev); main.appendChild(next);
+    var tr = document.createElement('div'); tr.className = 'bb-gal-thumbs';
+    var thumbs = imgs.map(function(src, i) {
+      var t = document.createElement('img'); t.src = src;
+      t.className = 'bb-gal-thumb' + (i === 0 ? ' active' : '');
+      t.addEventListener('click', function() { go(i); }); return t;
+    });
+    thumbs.forEach(function(t) { tr.appendChild(t); });
+    var tx = null;
+    main.addEventListener('touchstart', function(e) { tx = e.touches[0].clientX; }, { passive: true });
+    main.addEventListener('touchend', function(e) {
+      if (tx === null) return; var dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) go(dx < 0 ? cur + 1 : cur - 1); tx = null;
+    }, { passive: true });
+    function go(n) {
+      cur = (n + imgs.length) % imgs.length;
+      mImg.src = imgs[cur]; mImg.style.transform = ''; mImg.style.transformOrigin = '';
+      thumbs.forEach(function(t, i) { t.classList.toggle('active', i === cur); });
+    }
+    attachZoom(main, mImg);
+    wrap.appendChild(main); wrap.appendChild(tr);
+    imgEl.parentNode.replaceChild(wrap, imgEl);
+  };
+
+  // Initialize gallery for each Canada product card (ID-based)
+  Object.keys(window.BB_GALLERIES).forEach(function(id) {
+    var card = document.getElementById(id);
+    if (!card) return;
+    var imgs = window.BB_GALLERIES[id];
+    window.BB_buildGallery(card, imgs);
+  });
+})();
+</script>
 <script>
 (function(){
   fetch('https://bottarga-brothers-chat.zoozoomfast.workers.dev/units-sold')
