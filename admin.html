@@ -1436,8 +1436,7 @@ async function addNewProduct(){
   if(npImg){npImg.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';npImg.style.display='none';}
   if(npLbl)npLbl.textContent='Drop or click to upload';
   addNpSizeRow();
-  saveAll();
-  msg.textContent='"'+name+'" added and saved to site.';msg.className='msg ok';
+  msg.textContent='"'+name+'" added — click Save All to publish.';msg.className='msg ok';
   setTimeout(()=>{msg.textContent='';},4500);
 }
 function deleteCustomProduct(id,name){
