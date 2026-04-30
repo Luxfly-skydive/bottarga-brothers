@@ -581,21 +581,21 @@ const TEXT_MAP={
 };
 const PRODUCT_SELS={sardinian_gold:'#sardinia',boutargue_classique:'#france',boutargue_imperiale:'#imperiale',boutargue_imperiale_aged:'#imperiale-aged',greek_avgotaraho:'#greece',ouro_do_brasil:'#brazil',aged_ouro_do_brasil:'#brazil-aged',egyptian_royale:'#egypt',grated_gold:'#grated',grated_pouch:'#grated-pouch'};
 const PRODUCTS=[
-  {id:'sardinian_gold',label:'Sardinian Gold',origin:'🇮🇹 Sardinia, Italy',defaultBadge:'On Sale',sizes:[{l:'M — 4.9 oz (138g)',p:'$38.99'},{l:'L — 5.3 oz (150g)',p:'$41.99'},{l:'XL — 5.6 oz (160g)',p:'$42.99'}]},
-  {id:'boutargue_classique',label:'Boutargue Classique',origin:'🇫🇷 France — Traditional Waxed',defaultBadge:'',sizes:[{l:'S — 3.7 oz',p:'$33.99'},{l:'M — 4.4 oz',p:'$45.99'},{l:'L — 6.0 oz',p:'$47.99'},{l:'XL — 6.2 oz',p:'$49.99'},{l:'Jumbo — 7.7 oz',p:'$58.99'},{l:'Mega — 8.5 oz',p:'$62.99'},{l:'Giant — 13.0 oz',p:'$91.99'}]},
-  {id:'boutargue_imperiale',label:'Boutargue Impériale',origin:'🇫🇷 France — Premium Grade',defaultBadge:'',sizes:[{l:'XS — ~3.2 oz',p:'$30.99'},{l:'S — ~3.5 oz',p:'$32.99'},{l:'M — ~6.1 oz',p:'$49.99'},{l:'L — ~6.4 oz',p:'$51.99'}]},
-  {id:'boutargue_imperiale_aged',label:'Boutargue Impériale Aged',origin:'🇫🇷 France — Aged Reserve',defaultBadge:'Limited',sizes:[{l:'From',p:'$30.99'}]},
-  {id:'greek_avgotaraho',label:'Greek Avgotaraho',origin:'🇬🇷 Greece — Athens',defaultBadge:'',sizes:[{l:'S — ~5.6 oz',p:'$44.99'},{l:'M — ~5.8 oz',p:'$45.99'},{l:'L — ~6.3 oz',p:'$48.99'},{l:'XL — ~6.6 oz',p:'$50.99'},{l:'Mega — ~7.4 oz',p:'$55.99'}]},
-  {id:'ouro_do_brasil',label:'Ouro do Brasil',origin:'🇧🇷 Brazil — Santa Catarina',defaultBadge:'',sizes:[{l:'Standard',p:'$22.99'}]},
-  {id:'aged_ouro_do_brasil',label:'Aged Ouro do Brasil',origin:'🇧🇷 Brazil — Aged Reserve',defaultBadge:'Limited',sizes:[{l:'From',p:'$22.99'}]},
-  {id:'egyptian_royale',label:'Egyptian Royale',origin:'🇪🇬 Egypt — Port Said',defaultBadge:'Sold Out',sizes:[{l:'Small',p:'$24.00'},{l:'Large',p:'$39.99'}]},
-  {id:'grated_gold',label:'Grated Gold',origin:'🇮🇹 Sardinia — Grated',defaultBadge:'',sizes:[{l:'1 jar — 40g',p:'$19.99'},{l:'2 jars — 80g',p:'$35.99'},{l:'3 jars — 120g',p:'$50.99'}]},
-  {id:'grated_pouch',label:'Grated Bottarga Pouch',origin:'🇮🇹 Sardinia — 50g Pouch',defaultBadge:'',sizes:[{l:'50g Pouch',p:'$18.99'}]},
+  {id:'sardinian_gold',label:'Sardinian Gold',origin:'🇮🇹 Sardinia, Italy',defaultBadge:'On Sale',defaultImg:'img/sardin_square.jpg',sizes:[{l:'M — 4.9 oz (138g)',p:'$38.99'},{l:'L — 5.3 oz (150g)',p:'$41.99'},{l:'XL — 5.6 oz (160g)',p:'$42.99'}]},
+  {id:'boutargue_classique',label:'Boutargue Classique',origin:'🇫🇷 France — Traditional Waxed',defaultBadge:'',defaultImg:'img/1b_boutargue_classique.jpg',sizes:[{l:'S — 3.7 oz',p:'$33.99'},{l:'M — 4.4 oz',p:'$45.99'},{l:'L — 6.0 oz',p:'$47.99'},{l:'XL — 6.2 oz',p:'$49.99'},{l:'Jumbo — 7.7 oz',p:'$58.99'},{l:'Mega — 8.5 oz',p:'$62.99'},{l:'Giant — 13.0 oz',p:'$91.99'}]},
+  {id:'boutargue_imperiale',label:'Boutargue Impériale',origin:'🇫🇷 France — Premium Grade',defaultBadge:'',defaultImg:'img/imperiale_square.jpg',sizes:[{l:'XS — ~3.2 oz',p:'$30.99'},{l:'S — ~3.5 oz',p:'$32.99'},{l:'M — ~6.1 oz',p:'$49.99'},{l:'L — ~6.4 oz',p:'$51.99'}]},
+  {id:'boutargue_imperiale_aged',label:'Boutargue Impériale Aged',origin:'🇫🇷 France — Aged Reserve',defaultBadge:'Limited',defaultImg:'img/imperiale_square.jpg',sizes:[{l:'From',p:'$30.99'}]},
+  {id:'greek_avgotaraho',label:'Greek Avgotaraho',origin:'🇬🇷 Greece — Athens',defaultBadge:'',defaultImg:'img/greek_avgotaharo.jpg',sizes:[{l:'S — ~5.6 oz',p:'$44.99'},{l:'M — ~5.8 oz',p:'$45.99'},{l:'L — ~6.3 oz',p:'$48.99'},{l:'XL — ~6.6 oz',p:'$50.99'},{l:'Mega — ~7.4 oz',p:'$55.99'}]},
+  {id:'ouro_do_brasil',label:'Ouro do Brasil',origin:'🇧🇷 Brazil — Santa Catarina',defaultBadge:'',defaultImg:'img/op_odb.jpg',sizes:[{l:'Standard',p:'$22.99'}]},
+  {id:'aged_ouro_do_brasil',label:'Aged Ouro do Brasil',origin:'🇧🇷 Brazil — Aged Reserve',defaultBadge:'Limited',defaultImg:'img/ouro_10.jpg',sizes:[{l:'From',p:'$22.99'}]},
+  {id:'egyptian_royale',label:'Egyptian Royale',origin:'🇪🇬 Egypt — Port Said',defaultBadge:'Sold Out',defaultImg:'img/1b_egyptian-bottarga.jpg',sizes:[{l:'Small',p:'$24.00'},{l:'Large',p:'$39.99'}]},
+  {id:'grated_gold',label:'Grated Gold',origin:'🇮🇹 Sardinia — Grated',defaultBadge:'',defaultImg:'img/new_box_grated.jpg',sizes:[{l:'1 jar — 40g',p:'$19.99'},{l:'2 jars — 80g',p:'$35.99'},{l:'3 jars — 120g',p:'$50.99'}]},
+  {id:'grated_pouch',label:'Grated Bottarga Pouch',origin:'🇮🇹 Sardinia — 50g Pouch',defaultBadge:'',defaultImg:'img/50gr_square.jpg',sizes:[{l:'50g Pouch',p:'$18.99'}]},
   // Canadian products
-  {id:'sardinian_gold_ca',label:'Sardinian Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',sizes:[{l:'S (~97g)',p:'$33.99 CAD'},{l:'L (~145g)',p:'$45.99 CAD'},{l:'Jumbo (~154g)',p:'$47.99 CAD'}]},
-  {id:'boutargue_imperiale_ca',label:'Boutargue Impériale 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',sizes:[{l:'S (~100g)',p:'$37.99 CAD'},{l:'L (~175g)',p:'$49.99 CAD'}]},
-  {id:'ouro_do_brasil_ca',label:'Ouro do Brasil 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',sizes:[{l:'L (~133g)',p:'CAD'}]},
-  {id:'grated_gold_ca',label:'Grated Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',sizes:[{l:'1 pouch — 50g',p:'$16.99 CAD'},{l:'2 pouches — 100g',p:'$29.99 CAD'},{l:'6 pouches — 300g',p:'$92.99 CAD'}]},
+  {id:'sardinian_gold_ca',label:'Sardinian Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/sardin_square.jpg',sizes:[{l:'S (~97g)',p:'$33.99 CAD'},{l:'L (~145g)',p:'$45.99 CAD'},{l:'Jumbo (~154g)',p:'$47.99 CAD'}]},
+  {id:'boutargue_imperiale_ca',label:'Boutargue Impériale 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/imperiale_square.jpg',sizes:[{l:'S (~100g)',p:'$37.99 CAD'},{l:'L (~175g)',p:'$49.99 CAD'}]},
+  {id:'ouro_do_brasil_ca',label:'Ouro do Brasil 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/op_odb.jpg',sizes:[{l:'L (~133g)',p:'CAD'}]},
+  {id:'grated_gold_ca',label:'Grated Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/new_box_grated.jpg',sizes:[{l:'1 pouch — 50g',p:'$16.99 CAD'},{l:'2 pouches — 100g',p:'$29.99 CAD'},{l:'6 pouches — 300g',p:'$92.99 CAD'}]},
 ];
 const COLORS=[
   {key:'css_gold',label:'Gold (accent)',def:'#c9a84c'},
@@ -1461,6 +1461,7 @@ function buildProducts(){
     const sB=kvContent['product_'+p.id+'_badge']!==undefined?kvContent['product_'+p.id+'_badge']:p.defaultBadge;
     let sI=pendingChanges['product_'+p.id+'_img']||kvContent['product_'+p.id+'_img']||'';
     if(!sI&&p.id.endsWith('_ca')){const uId=p.id.slice(0,-3);sI=pendingChanges['product_'+uId+'_img']||kvContent['product_'+uId+'_img']||'';}
+    if(!sI)sI=p.defaultImg||'';
     const sN=kvContent['product_'+p.id+'_name']||'';const sD=kvContent['product_'+p.id+'_desc']||'';
     const gRaw=pendingChanges['gallery_'+p.id]!==undefined?pendingChanges['gallery_'+p.id]:(kvContent['gallery_'+p.id]||'');
     let galleryArr=[];try{if(gRaw){const a=JSON.parse(gRaw);if(Array.isArray(a))galleryArr=a;}}catch(e){}
@@ -1481,7 +1482,7 @@ function buildProducts(){
           <div>
             <div class="img-drop" id="drop_${p.id}" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'${p.id}')">
               <img alt="${p.label}" id="dropimg_${p.id}" src="${sI||'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" style="height:115px;width:100%;object-fit:cover;border-radius:5px;margin-bottom:.35rem;${sI?'':'display:none'}"/>
-              <div class="img-drop-label" id="droplbl_${p.id}">${sI?'Click or drop to replace main':'Drop image or click to upload'}</div>
+              <div class="img-drop-label" id="droplbl_${p.id}">${(pendingChanges['product_'+p.id+'_img']||kvContent['product_'+p.id+'_img'])?'Click or drop to replace main':'Drop image or click to replace'}</div>
               <input type="file" accept="image/*" onchange="handleFileInput(event,'${p.id}')"/>
             </div>
             <div style="font-size:.6rem;color:var(--muted);margin:.3rem 0 .1rem;">Additional slides</div>
