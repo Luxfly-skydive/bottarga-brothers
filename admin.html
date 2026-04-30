@@ -216,6 +216,12 @@ body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMac
 .stock-unit{font-size:.7rem;color:var(--muted);}
 .stock-toggle-wrap.stock-open .stock-toggle-body{display:block!important;}
 .stock-toggle-wrap.stock-open .stock-toggle-chevron{transform:rotate(180deg);}
+.shop-section-hdr{display:flex;align-items:center;gap:.5rem;margin:1.2rem 0 .6rem;padding:.5rem .7rem;background:rgba(255,255,255,.04);border-radius:8px;border-left:3px solid var(--gold);}
+.shop-section-hdr span{font-size:.8rem;font-weight:700;letter-spacing:.07em;color:var(--cream);text-transform:uppercase;}
+.stock-open-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);color:var(--gold);padding:6px 12px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;margin-bottom:0;letter-spacing:.04em;}
+.stock-open-btn:hover{background:rgba(201,168,76,.18);}
+.stock-open-btn .sbv{transition:transform .2s;font-size:.65rem;}
+.stock-toggle-wrap.stock-open .stock-open-btn .sbv{transform:rotate(180deg);}
 </style>
 </head>
 <body>
@@ -1345,7 +1351,9 @@ function buildProducts(){
   const active=PRODUCTS.filter(p=>kvContent['product_'+p.id+'_removed']!=='true'&&pendingChanges['product_'+p.id+'_removed']!=='true'&&kvContent['product_'+p.id+'_deleted']!=='true'&&pendingChanges['product_'+p.id+'_deleted']!=='true');
   const removed=PRODUCTS.filter(p=>(kvContent['product_'+p.id+'_removed']==='true'||pendingChanges['product_'+p.id+'_removed']==='true')&&kvContent['product_'+p.id+'_deleted']!=='true'&&pendingChanges['product_'+p.id+'_deleted']!=='true');
   const deleted=PRODUCTS.filter(p=>kvContent['product_'+p.id+'_deleted']==='true'||pendingChanges['product_'+p.id+'_deleted']==='true');
-  list.innerHTML=active.map(p=>{
+  const usaActive=active.filter(p=>!p.id.endsWith('_ca'));
+  const caActive=active.filter(p=>p.id.endsWith('_ca'));
+  const renderProd=p=>{
     let ss=p.sizes;
     try{if(kvContent['product_'+p.id+'_sizes'])ss=JSON.parse(kvContent['product_'+p.id+'_sizes']);}catch(e){}
     const sB=kvContent['product_'+p.id+'_badge']!==undefined?kvContent['product_'+p.id+'_badge']:p.defaultBadge;
@@ -1358,10 +1366,7 @@ function buildProducts(){
       </div>
       <div class="product-card-body">
         ${(PRODUCT_PRICE_IDS[p.id]||[]).length>0?`<div class="field stock-toggle-wrap" style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
-          <div class="stock-toggle-head" onclick="this.closest('.stock-toggle-wrap').classList.toggle('stock-open')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
-            <label style="font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.06em;cursor:pointer;pointer-events:none;">📦 STOCK / INVENTORY</label>
-            <span class="stock-toggle-chevron" style="color:var(--muted);font-size:.7rem;transition:transform .2s;">▼</span>
-          </div>
+          <button class="stock-open-btn" onclick="this.closest('.stock-toggle-wrap').classList.toggle('stock-open')">📦 Stock &amp; Inventory <span class="sbv">▼</span></button>
           <div class="stock-toggle-body" style="display:none;margin-top:.6rem;">
             <div class="stock-size-grid">${(PRODUCT_PRICE_IDS[p.id]||[]).map(s=>`<div class="stock-row"><span class="stock-size-label">${s.label}</span><input type="number" min="0" step="1" class="stock-qty-input" data-price-id="${s.id}" placeholder="∞" value="${stockData[s.id]!==null&&stockData[s.id]!==undefined?stockData[s.id]:''}" oninput="updateDirty()"/><span class="stock-unit">units</span></div>`).join('')}</div>
             <div style="font-size:.63rem;color:var(--muted);margin-top:.3rem;">Blank = unlimited &nbsp;|&nbsp; 0 = out of stock &nbsp;|&nbsp; ≤10 shows red warning on shop page. Saved with <em>Save All</em>.</div>
@@ -1400,7 +1405,10 @@ function buildProducts(){
         </div>
       </div>
     </div>`;
-  }).join('');
+  };
+  list.innerHTML=
+    (usaActive.length>0?'<div class="shop-section-hdr"><span>🇺🇸 USA Shop</span></div>'+usaActive.map(renderProd).join(''):'') +
+    (caActive.length>0?'<div class="shop-section-hdr"><span>🇨🇦 Canada Shop</span></div>'+caActive.map(renderProd).join(''):'');
   // Custom products
   if(CUSTOM_PRODUCTS.length>0){
     list.insertAdjacentHTML('beforeend',CUSTOM_PRODUCTS.map(cp=>{
