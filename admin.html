@@ -766,6 +766,7 @@ async function loadContent(){
   try{const r=await fetch(WORKER+'/content');kvContent=await r.json()||{};}catch(e){kvContent={};}
   if(kvContent.custom_products_json){try{CUSTOM_PRODUCTS=JSON.parse(kvContent.custom_products_json);}catch(e){CUSTOM_PRODUCTS=[];}}
   // Heal any double-encoded gallery data from the legacy textarea-conversion bug
+  let _galleryHealed=false;
   PRODUCTS.forEach(p=>{
     const gk='gallery_'+p.id;
     if(!kvContent[gk])return;
@@ -774,9 +775,15 @@ async function loadContent(){
       while(Array.isArray(parsed)&&parsed.length===1&&typeof parsed[0]==='string'&&parsed[0].startsWith('[')){
         try{parsed=JSON.parse(parsed[0]);}catch(e){break;}
       }
-      if(Array.isArray(parsed))kvContent[gk]=JSON.stringify(parsed);
+      if(Array.isArray(parsed)){const fixed=JSON.stringify(parsed);if(fixed!==kvContent[gk]){kvContent[gk]=fixed;_galleryHealed=true;}}
     }catch(e){}
   });
+  // If corrupt gallery data was found, silently save healed content back to KV
+  if(_galleryHealed){
+    try{
+      await fetch(WORKER+'/content',{method:'POST',headers:authH(),body:JSON.stringify(kvContent)});
+    }catch(e){}
+  }
   buildProducts();buildColors();populatePanelFields();await loadStock();
 }
 
@@ -1368,8 +1375,15 @@ function handleDrop(ev,pid){
 // ── Gallery slot helpers ──────────────────────────────────────────────────
 function getGalleryArr(pid){
   const raw=pendingChanges['gallery_'+pid]!==undefined?pendingChanges['gallery_'+pid]:(kvContent['gallery_'+pid]||'');
-  if(!raw)return(GALLERY_DEFAULTS[pid]||[]).slice(); // slice() so mutations don't affect the defaults
-  try{const a=JSON.parse(raw);return Array.isArray(a)?a:[];}catch(e){return(GALLERY_DEFAULTS[pid]||[]).slice();}
+  if(!raw)return(GALLERY_DEFAULTS[pid]||[]).slice();
+  try{
+    let a=JSON.parse(raw);
+    // Unwrap legacy double-encoding: ['["img/a.jpg","img/b.jpg"]'] → ['img/a.jpg','img/b.jpg']
+    while(Array.isArray(a)&&a.length===1&&typeof a[0]==='string'&&a[0].startsWith('[')){
+      try{a=JSON.parse(a[0]);}catch(e){break;}
+    }
+    return Array.isArray(a)?a:[];
+  }catch(e){return(GALLERY_DEFAULTS[pid]||[]).slice();}
 }
 function setGalleryArr(pid,arr){pendingChanges['gallery_'+pid]=JSON.stringify(arr);updateDirty();}
 function buildGalleryItems(pid,arr){
@@ -1394,7 +1408,11 @@ function previewGalleryImg(pid,idx){
   const arr=getGalleryArr(pid);if(!arr[idx])return;
   // Swap main preview image temporarily (doesn't change the saved cover)
   const img=document.getElementById('dropimg_'+pid);const lbl=document.getElementById('droplbl_'+pid);
-  if(img){img.src=arr[idx];img.style.display='';}
+  if(img){
+    const prev=img.src;
+    img.onerror=function(){img.src=prev;img.onerror=null;}; // Restore if load fails
+    img.src=arr[idx];img.style.display='';
+  }
   if(lbl)lbl.textContent='⬅ Slide '+(idx+1)+' preview — upload above to change cover';
   // Highlight active thumb
   document.querySelectorAll('#gstrip_'+pid+' .gallery-thumb').forEach((t,i)=>t.classList.toggle('active-preview',i===idx));

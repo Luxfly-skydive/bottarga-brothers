@@ -464,7 +464,12 @@
       Object.entries(PROD_ID_MAP).forEach(function([key,pid]){
         var gj=data['gallery_'+key]; if(!gj)return;
         try{
-          var imgs=JSON.parse(gj); if(!Array.isArray(imgs)||!imgs.length)return;
+          var imgs=JSON.parse(gj);
+          // Unwrap legacy double-encoding: ['["img/a.jpg"]'] → ['img/a.jpg',...]
+          while(Array.isArray(imgs)&&imgs.length===1&&typeof imgs[0]==='string'&&imgs[0].startsWith('[')){
+            try{imgs=JSON.parse(imgs[0]);}catch(e){break;}
+          }
+          if(!Array.isArray(imgs)||!imgs.length)return;
           window.BB_GALLERIES[pid]=imgs;
           var card=document.querySelector('[data-product="'+pid+'"]'); if(!card)return;
           var ew=card.querySelector('.bb-gallery');
