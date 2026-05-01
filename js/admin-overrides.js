@@ -448,11 +448,18 @@
     }
 
     // Gallery overrides — update BB_GALLERIES from KV and re-render affected products
-    var PROD_ID_MAP={sardinian_gold:'sardinian-gold',classique:'boutargue-classique',
-      imperiale:'boutargue-imperiale',imperiale_aged:'boutargue-imperiale-aged',
-      greek:'greek-avgotaraho',ouro:'ouro-do-brasil',
-      aged_ouro:'aged-ouro-do-brasil',grated_gold:'grated-gold',
-      grated_pouch:'grated-bottarga-pouch'};
+    var PROD_ID_MAP={
+      sardinian_gold:'sardinian-gold',
+      boutargue_classique:'boutargue-classique',
+      boutargue_imperiale:'boutargue-imperiale',
+      boutargue_imperiale_aged:'boutargue-imperiale-aged',
+      greek_avgotaraho:'greek-avgotaraho',
+      ouro_do_brasil:'ouro-do-brasil',
+      aged_ouro_do_brasil:'aged-ouro-do-brasil',
+      egyptian_royale:'egyptian-royale',
+      grated_gold:'grated-gold',
+      grated_pouch:'grated-bottarga-pouch',
+    };
     if(window.BB_GALLERIES&&window.BB_buildGallery){
       Object.entries(PROD_ID_MAP).forEach(function([key,pid]){
         var gj=data['gallery_'+key]; if(!gj)return;

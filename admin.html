@@ -597,6 +597,26 @@ const PRODUCTS=[
   {id:'ouro_do_brasil_ca',label:'Ouro do Brasil 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/op_odb.jpg',sizes:[{l:'L (~133g)',p:'CAD'}]},
   {id:'grated_gold_ca',label:'Grated Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/new_box_grated.jpg',sizes:[{l:'1 pouch — 50g',p:'$16.99 CAD'},{l:'2 pouches — 100g',p:'$29.99 CAD'},{l:'6 pouches — 300g',p:'$92.99 CAD'}]},
 ];
+// Default gallery images per product — mirrors BB_GALLERIES in shop-usa.html
+// These show in the admin strip when no custom gallery has been uploaded yet.
+// Also used as the base when the user adds/removes slides (prevents losing defaults).
+const GALLERY_DEFAULTS={
+  sardinian_gold:['img/sardinian_40off.jpg','img/sardin_square.jpg'],
+  boutargue_classique:['img/bout_class_square.jpg','img/1b_boutargue_classique.jpg'],
+  boutargue_imperiale:['img/imperiale_square.jpg','img/boutargue_kasher_front-copy.jpg'],
+  boutargue_imperiale_aged:['img/boutargue_kasher_front-copy.jpg','img/imperiale_square.jpg'],
+  greek_avgotaraho:['img/greek_avgotaraho.jpg','img/greek_avgotaharo.jpg'],
+  ouro_do_brasil:['img/1_brazilian_bottarga-copy-1.jpg','img/brazil_square.jpg','img/ouro_10.jpg'],
+  aged_ouro_do_brasil:['img/brazil_square.jpg','img/op_odb.jpg'],
+  egyptian_royale:['img/1b_egyptian-bottarga.jpg','img/tp_imp_egyp_royal.jpg'],
+  grated_gold:['img/cropped-whole_grated_bottarga-scaled-2.jpg','img/new_box_grated.jpg'],
+  grated_pouch:['img/50_gr_grated_sardinian.jpg','img/50gr_square.jpg'],
+  sardinian_gold_ca:['img/sardinian_40off.jpg','img/sardin_square.jpg'],
+  boutargue_imperiale_ca:['img/imperiale_square.jpg','img/boutargue_kasher_front-copy.jpg'],
+  ouro_do_brasil_ca:['img/1_brazilian_bottarga-copy-1.jpg','img/brazil_square.jpg'],
+  grated_gold_ca:['img/cropped-whole_grated_bottarga-scaled-2.jpg','img/new_box_grated.jpg'],
+};
+
 const COLORS=[
   {key:'css_gold',label:'Gold (accent)',def:'#c9a84c'},
   {key:'css_dark',label:'Background (dark)',def:'#0e0c09'},
@@ -1331,7 +1351,8 @@ function handleDrop(ev,pid){
 // ── Gallery slot helpers ──────────────────────────────────────────────────
 function getGalleryArr(pid){
   const raw=pendingChanges['gallery_'+pid]!==undefined?pendingChanges['gallery_'+pid]:(kvContent['gallery_'+pid]||'');
-  if(!raw)return[];try{const a=JSON.parse(raw);return Array.isArray(a)?a:[];}catch(e){return[];}
+  if(!raw)return(GALLERY_DEFAULTS[pid]||[]).slice(); // slice() so mutations don't affect the defaults
+  try{const a=JSON.parse(raw);return Array.isArray(a)?a:[];}catch(e){return(GALLERY_DEFAULTS[pid]||[]).slice();}
 }
 function setGalleryArr(pid,arr){pendingChanges['gallery_'+pid]=JSON.stringify(arr);updateDirty();}
 function buildGalleryItems(pid,arr){
@@ -1463,8 +1484,7 @@ function buildProducts(){
     if(!sI&&p.id.endsWith('_ca')){const uId=p.id.slice(0,-3);sI=pendingChanges['product_'+uId+'_img']||kvContent['product_'+uId+'_img']||'';}
     if(!sI)sI=p.defaultImg||'';
     const sN=kvContent['product_'+p.id+'_name']||'';const sD=kvContent['product_'+p.id+'_desc']||'';
-    const gRaw=pendingChanges['gallery_'+p.id]!==undefined?pendingChanges['gallery_'+p.id]:(kvContent['gallery_'+p.id]||'');
-    let galleryArr=[];try{if(gRaw){const a=JSON.parse(gRaw);if(Array.isArray(a))galleryArr=a;}}catch(e){}
+    const galleryArr=getGalleryArr(p.id);
     return`<div class="product-card open" id="pc_${p.id}">
       <div class="product-card-head" onclick="toggleCard('${p.id}')">
         <div><div class="product-card-title">${p.label}</div><div class="product-card-origin">${p.origin}</div></div>
