@@ -285,6 +285,9 @@
     'sardinian_gold', 'boutargue_classique', 'boutargue_imperiale',
     'boutargue_imperiale_aged', 'greek_avgotaraho', 'ouro_do_brasil',
     'aged_ouro_do_brasil', 'egyptian_royale', 'grated_gold', 'grated_pouch',
+    // Canadian products
+    'sardinian_gold_ca', 'boutargue_imperiale_ca', 'ouro_do_brasil_ca',
+    'grated_gold_ca', 'greek_avgotaraho_ca', 'egyptian_royale_ca', 'aged_ouro_do_brasil_ca',
   ];
 
   // CSS selector for each product's DOM section
@@ -299,6 +302,14 @@
     egyptian_royale:        '#egypt',
     grated_gold:            '#grated',
     grated_pouch:           '#grated-pouch',
+    // Canadian products
+    sardinian_gold_ca:      '#sardinia-ca',
+    boutargue_imperiale_ca: '#imperiale-ca',
+    ouro_do_brasil_ca:      '#brazil-ca',
+    grated_gold_ca:         '#grated-ca',
+    greek_avgotaraho_ca:    '#greece-ca',
+    egyptian_royale_ca:     '#egypt-ca',
+    aged_ouro_do_brasil_ca: '#brazil-aged-ca',
   };
 
   // _$showImgs re-queries every time so dynamically-added images are always revealed.
@@ -469,6 +480,14 @@
       egyptian_royale:'egyptian-royale',
       grated_gold:'grated-gold',
       grated_pouch:'grated-bottarga-pouch',
+      // Canadian products
+      sardinian_gold_ca:'sardinian-gold-ca',
+      boutargue_imperiale_ca:'boutargue-imperiale-ca',
+      ouro_do_brasil_ca:'ouro-do-brasil-ca',
+      grated_gold_ca:'grated-gold-ca',
+      greek_avgotaraho_ca:'greek-avgotaraho-ca',
+      egyptian_royale_ca:'egyptian-royale-ca',
+      aged_ouro_do_brasil_ca:'aged-ouro-do-brasil-ca',
     };
     if(window.BB_GALLERIES&&window.BB_buildGallery){
       Object.entries(PROD_ID_MAP).forEach(function([key,pid]){

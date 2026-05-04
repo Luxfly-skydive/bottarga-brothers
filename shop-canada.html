@@ -133,7 +133,7 @@
 <!-- Product Grid -->
 <div class="product-grid" id="productGrid">
 <!-- 1. Sardinian Gold Canada -->
-<div class="product-card fade-up" data-type="whole" id="sardinia-ca">
+<div class="product-card fade-up" data-product="sardinian-gold-ca" data-type="whole" id="sardinia-ca">
 <img alt="Sardinian Gold — Canada Pricing" class="product-img" src="img/tp_sard_gold_logo.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇮🇹 Sardinia · 🇨🇦 Canada</div>
@@ -161,7 +161,7 @@
 </div>
 </div>
 <!-- 2. Boutargue Impériale Canada -->
-<div class="product-card fade-up fade-up-delay-1" data-type="whole" id="imperiale-ca">
+<div class="product-card fade-up fade-up-delay-1" data-product="boutargue-imperiale-ca" data-type="whole" id="imperiale-ca">
 <img alt="Boutargue Impériale — Canada Pricing" class="product-img" src="img/imperiale_square.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇫🇷 France · 🇨🇦 Canada</div>
@@ -187,7 +187,7 @@
 </div>
 </div>
 <!-- 3. Ouro do Brasil Canada -->
-<div class="product-card fade-up fade-up-delay-2" data-type="whole" id="brazil-ca">
+<div class="product-card fade-up fade-up-delay-2" data-product="ouro-do-brasil-ca" data-type="whole" id="brazil-ca">
 <img alt="Ouro do Brasil — Canada Pricing" class="product-img" src="img/50gr_square.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇧🇷 Brazil · 🇨🇦 Canada</div>
@@ -208,7 +208,7 @@
 </div>
 </div>
 <!-- 4. Grated Gold Canada -->
-<div class="product-card fade-up" data-type="grated" id="grated-ca">
+<div class="product-card fade-up" data-product="grated-gold-ca" data-type="grated" id="grated-ca">
 <img alt="Grated Gold — Canada Pricing" class="product-img" src="img/cropped-whole_grated_bottarga-scaled-2.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇮🇹 Sardinia · 🇨🇦 Canada</div>
@@ -236,43 +236,79 @@
 </div>
 </div>
 <!-- 5. Greek Avgotaraho Canada (Sold Out) -->
-<div class="product-card fade-up fade-up-delay-1 sold-out" data-type="whole" id="greece-ca">
-<div class="product-badge" style="background:var(--dark); border:1px solid var(--muted); color:var(--muted);">Sold Out</div>
+<div class="product-card fade-up fade-up-delay-1" data-product="greek-avgotaraho-ca" data-type="whole" id="greece-ca">
 <img alt="Greek Avgotaraho — Canada" class="product-img" src="img/greek_avgotaraho.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇬🇷 Greece · 🇨🇦 Canada</div>
 <div class="product-name">Greek Avgotaraho</div>
-<p class="product-desc">Hand-dipped in natural beeswax by respected Athens artisans — silky, sweet, and briny. Served in the world's finest restaurants. Currently unavailable for Canadian orders — contact us to be added to the waitlist.</p>
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem;">
-<div class="product-price" style="color:var(--muted);">Temporarily Unavailable</div>
-<a href="contact.html" style="font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); border:1px solid var(--border); padding:0.5rem 1rem; text-decoration:none;">Notify Me</a>
+<p class="product-desc">Hand-dipped in natural beeswax by respected Athens artisans — silky, sweet, and briny. Served in the world's finest restaurants. Ships direct from Montreal in 3–7 business days.</p>
+<div style="background:var(--dark); border:1px solid var(--border); padding:1rem; margin:1rem 0; border-radius:2px;">
+<div style="font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Available Sizes (CAD)</div>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; font-size:0.8rem;">
+<span style="color:var(--muted);">S — ~5.6 oz</span><span style="color:var(--cream); text-align:right;">$59.99</span>
+<span style="color:var(--muted);">M — ~5.8 oz</span><span style="color:var(--cream); text-align:right;">$61.99</span>
+<span style="color:var(--muted);">L — ~6.3 oz</span><span style="color:var(--cream); text-align:right;">$64.99</span>
+<span style="color:var(--muted);">XL — ~6.6 oz</span><span style="color:var(--cream); text-align:right;">$67.99</span>
+<span style="color:var(--muted);">Mega — ~7.4 oz</span><span style="color:var(--cream); text-align:right;">$74.99</span>
+</div>
+</div>
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+<select class="bb-size-select" id="ga-ca-size">
+<option value="price_1TTQC1PnG7UtHDWefowRuLLJ">S — ~5.6 oz — $59.99 CAD</option>
+<option value="price_1TTQC1PnG7UtHDWe6oaQfncb">M — ~5.8 oz — $61.99 CAD</option>
+<option value="price_1TTQC1PnG7UtHDWejJhYRn5A">L — ~6.3 oz — $64.99 CAD</option>
+<option value="price_1TTQC2PnG7UtHDWe6gp9BlkB">XL — ~6.6 oz — $67.99 CAD</option>
+<option value="price_1TTQC2PnG7UtHDWeZqIvnD3p">Mega — ~7.4 oz — $74.99 CAD</option>
+</select>
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+<div class="product-price"><span class="from">From</span>$59.99 CAD</div>
+<button class="bb-atc-btn" data-atc-product="greek-avgotaraho-ca" onclick="window._bbCart&amp;&amp;window._bbCart.add('greek-avgotaraho-ca',document.getElementById('ga-ca-size').value)">Add to Cart</button>
+</div>
 </div>
 </div>
 </div>
 <!-- 6. Egyptian Royal Canada -->
-<div class="product-card fade-up fade-up-delay-2" data-type="whole" id="egypt-ca">
+<div class="product-card fade-up fade-up-delay-2" data-product="egyptian-royale-ca" data-type="whole" id="egypt-ca">
 <img alt="Egyptian Royale — Canada" class="product-img" src="img/1b_egyptian-bottarga.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇪🇬 Egypt · 🇨🇦 Canada</div>
 <div class="product-name">Egyptian Royale <span style="font-size:0.75rem; font-family:var(--sans); color:var(--muted);">البوري المصري</span></div>
-<p class="product-desc">Whole shrink-wrapped Egyptian Batarekh from Port Said. Soft, moist texture with a sublime ocean taste. Traditionally served sliced thin with garlic, olive oil, and flatbread. Contact us for current Canadian availability and pricing.</p>
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem;">
-<div class="product-price" style="font-size:0.9rem; color:var(--muted);">Contact for pricing</div>
-<a class="btn btn-gold" href="contact.html" style="padding:0.5rem 1.2rem; font-size:0.65rem;">Inquire</a>
+<p class="product-desc">Whole shrink-wrapped Egyptian Batarekh from Port Said. Soft, moist texture with a sublime ocean taste. Traditionally served sliced thin with garlic, olive oil, and flatbread. Ships to Canada in 3–7 business days from Montreal.</p>
+<div style="background:var(--dark); border:1px solid var(--border); padding:1rem; margin:1rem 0; border-radius:2px;">
+<div style="font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Available Sizes (CAD)</div>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; font-size:0.8rem;">
+<span style="color:var(--muted);">Small</span><span style="color:var(--cream); text-align:right;">$32.99</span>
+<span style="color:var(--muted);">Large</span><span style="color:var(--cream); text-align:right;">$52.99</span>
+</div>
+</div>
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+<select class="bb-size-select" id="er-ca-size">
+<option value="price_1TTQC2PnG7UtHDWeJWhZ0vWt">Small — $32.99 CAD</option>
+<option value="price_1TTQC3PnG7UtHDWekz74pifC">Large — $52.99 CAD</option>
+</select>
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+<div class="product-price"><span class="from">From</span>$32.99 CAD</div>
+<button class="bb-atc-btn" data-atc-product="egyptian-royale-ca" onclick="window._bbCart&amp;&amp;window._bbCart.add('egyptian-royale-ca',document.getElementById('er-ca-size').value)">Add to Cart</button>
+</div>
 </div>
 </div>
 </div>
 <!-- 7. Aged Ouro do Brasil Canada (Sold Out) -->
-<div class="product-card fade-up sold-out" data-type="whole">
-<div class="product-badge" style="background:var(--dark); border:1px solid var(--muted); color:var(--muted);">Sold Out</div>
+<div class="product-card fade-up" data-product="aged-ouro-do-brasil-ca" data-type="whole" id="brazil-aged-ca">
 <img alt="Aged Ouro do Brasil — Canada" class="product-img" src="img/brazil_square.jpg"/>
 <div class="product-info">
 <div class="product-origin">🇧🇷 Brazil · 🇨🇦 Canada</div>
 <div class="product-name">Aged Ouro do Brasil</div>
-<p class="product-desc">Extended aging gives this Brazilian bottarga a more pronounced, complex character. Far more intense flavour than the standard Ouro do Brasil. Currently out of stock for Canadian orders — contact us to be notified when available.</p>
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem;">
-<div class="product-price" style="color:var(--muted);">Temporarily Unavailable</div>
-<a href="contact.html" style="font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); border:1px solid var(--border); padding:0.5rem 1rem; text-decoration:none;">Notify Me</a>
+<p class="product-desc">Extended aging gives this Brazilian bottarga a more pronounced, complex character. Far more intense flavour than the standard Ouro do Brasil. Ships to Canada in 3–7 business days from Montreal.</p>
+<div style="background:var(--dark); border:1px solid var(--border); padding:1rem; margin:1rem 0; border-radius:2px;">
+<div style="font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Available Size (CAD)</div>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; font-size:0.8rem;">
+<span style="color:var(--muted);">Standard</span><span style="color:var(--cream); text-align:right;">$29.99</span>
+</div>
+</div>
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+<div class="product-price">$29.99 CAD</div>
+<button class="bb-atc-btn" data-atc-product="aged-ouro-do-brasil-ca" onclick="window._bbCart&amp;&amp;window._bbCart.add('aged-ouro-do-brasil-ca','price_1TTQC3PnG7UtHDWeQVwhID0E')">Add to Cart</button>
 </div>
 </div>
 </div>

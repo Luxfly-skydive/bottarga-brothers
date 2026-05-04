@@ -579,7 +579,7 @@ const TEXT_MAP={
   shop_feat1_title:'.shop-feat1-title',shop_feat1_p:'.shop-feat1-p',shop_feat2_title:'.shop-feat2-title',shop_feat2_p:'.shop-feat2-p',
   shop_feat3_title:'.shop-feat3-title',shop_feat3_p:'.shop-feat3-p',shop_feat4_title:'.shop-feat4-title',shop_feat4_p:'.shop-feat4-p',
 };
-const PRODUCT_SELS={sardinian_gold:'#sardinia',boutargue_classique:'#france',boutargue_imperiale:'#imperiale',boutargue_imperiale_aged:'#imperiale-aged',greek_avgotaraho:'#greece',ouro_do_brasil:'#brazil',aged_ouro_do_brasil:'#brazil-aged',egyptian_royale:'#egypt',grated_gold:'#grated',grated_pouch:'#grated-pouch'};
+const PRODUCT_SELS={sardinian_gold:'#sardinia',boutargue_classique:'#france',boutargue_imperiale:'#imperiale',boutargue_imperiale_aged:'#imperiale-aged',greek_avgotaraho:'#greece',ouro_do_brasil:'#brazil',aged_ouro_do_brasil:'#brazil-aged',egyptian_royale:'#egypt',grated_gold:'#grated',grated_pouch:'#grated-pouch',sardinian_gold_ca:'#sardinia-ca',boutargue_imperiale_ca:'#imperiale-ca',ouro_do_brasil_ca:'#brazil-ca',grated_gold_ca:'#grated-ca',greek_avgotaraho_ca:'#greece-ca',egyptian_royale_ca:'#egypt-ca',aged_ouro_do_brasil_ca:'#brazil-aged-ca'};
 const PRODUCTS=[
   {id:'sardinian_gold',label:'Sardinian Gold',origin:'🇮🇹 Sardinia, Italy',defaultBadge:'On Sale',defaultImg:'img/sardin_square.jpg',sizes:[{l:'M — 4.9 oz (138g)',p:'$38.99'},{l:'L — 5.3 oz (150g)',p:'$41.99'},{l:'XL — 5.6 oz (160g)',p:'$42.99'}]},
   {id:'boutargue_classique',label:'Boutargue Classique',origin:'🇫🇷 France — Traditional Waxed',defaultBadge:'',defaultImg:'img/1b_boutargue_classique.jpg',sizes:[{l:'S — 3.7 oz',p:'$33.99'},{l:'M — 4.4 oz',p:'$45.99'},{l:'L — 6.0 oz',p:'$47.99'},{l:'XL — 6.2 oz',p:'$49.99'},{l:'Jumbo — 7.7 oz',p:'$58.99'},{l:'Mega — 8.5 oz',p:'$62.99'},{l:'Giant — 13.0 oz',p:'$91.99'}]},
@@ -596,6 +596,9 @@ const PRODUCTS=[
   {id:'boutargue_imperiale_ca',label:'Boutargue Impériale 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/imperiale_square.jpg',sizes:[{l:'S (~100g)',p:'$37.99 CAD'},{l:'L (~175g)',p:'$49.99 CAD'}]},
   {id:'ouro_do_brasil_ca',label:'Ouro do Brasil 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/op_odb.jpg',sizes:[{l:'L (~133g)',p:'CAD'}]},
   {id:'grated_gold_ca',label:'Grated Gold 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/new_box_grated.jpg',sizes:[{l:'1 pouch — 50g',p:'$16.99 CAD'},{l:'2 pouches — 100g',p:'$29.99 CAD'},{l:'6 pouches — 300g',p:'$92.99 CAD'}]},
+  {id:'greek_avgotaraho_ca',label:'Greek Avgotaraho 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/greek_avgotaraho.jpg',sizes:[{l:'S ~5.6 oz',p:'$59.99 CAD'},{l:'M ~5.8 oz',p:'$61.99 CAD'},{l:'L ~6.3 oz',p:'$64.99 CAD'},{l:'XL ~6.6 oz',p:'$67.99 CAD'},{l:'Mega ~7.4 oz',p:'$74.99 CAD'}]},
+  {id:'egyptian_royale_ca',label:'Egyptian Royale 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/1b_egyptian-bottarga.jpg',sizes:[{l:'Small',p:'$32.99 CAD'},{l:'Large',p:'$52.99 CAD'}]},
+  {id:'aged_ouro_do_brasil_ca',label:'Aged Ouro do Brasil 🇨🇦',origin:'🇨🇦 Canada — CAD',defaultBadge:'',defaultImg:'img/brazil_square.jpg',sizes:[{l:'Standard',p:'$29.99 CAD'}]},
 ];
 // Default gallery images per product — mirrors BB_GALLERIES in shop-usa.html
 // These show in the admin strip when no custom gallery has been uploaded yet.
@@ -615,6 +618,9 @@ const GALLERY_DEFAULTS={
   boutargue_imperiale_ca:['img/imperiale_square.jpg','img/boutargue_kasher_front-copy.jpg'],
   ouro_do_brasil_ca:['img/1_brazilian_bottarga-copy-1.jpg','img/brazil_square.jpg'],
   grated_gold_ca:['img/cropped-whole_grated_bottarga-scaled-2.jpg','img/new_box_grated.jpg'],
+  greek_avgotaraho_ca:['img/greek_avgotaraho.jpg','img/greek_avgotaharo.jpg'],
+  egyptian_royale_ca:['img/1b_egyptian-bottarga.jpg','img/tp_imp_egyp_royal.jpg'],
+  aged_ouro_do_brasil_ca:['img/brazil_square.jpg','img/op_odb.jpg'],
 };
 
 const COLORS=[
@@ -701,6 +707,20 @@ const PRODUCT_PRICE_IDS={
     {id:'price_1TOSNhPnG7UtHDWegxMgc7RX',label:'1 pouch — 50g CAD'},
     {id:'price_1TOSNkPnG7UtHDWeQBUZVkK1',label:'2 pouches CAD'},
     {id:'price_1TOSNnPnG7UtHDWeQBUZVkK1',label:'6 pouches CAD'},
+  ],
+  greek_avgotaraho_ca:[
+    {id:'price_1TTQC1PnG7UtHDWefowRuLLJ',label:'S ~5.6 oz CAD'},
+    {id:'price_1TTQC1PnG7UtHDWe6oaQfncb',label:'M ~5.8 oz CAD'},
+    {id:'price_1TTQC1PnG7UtHDWejJhYRn5A',label:'L ~6.3 oz CAD'},
+    {id:'price_1TTQC2PnG7UtHDWe6gp9BlkB',label:'XL ~6.6 oz CAD'},
+    {id:'price_1TTQC2PnG7UtHDWeZqIvnD3p',label:'Mega ~7.4 oz CAD'},
+  ],
+  egyptian_royale_ca:[
+    {id:'price_1TTQC2PnG7UtHDWeJWhZ0vWt',label:'Small CAD'},
+    {id:'price_1TTQC3PnG7UtHDWekz74pifC',label:'Large CAD'},
+  ],
+  aged_ouro_do_brasil_ca:[
+    {id:'price_1TTQC3PnG7UtHDWeQVwhID0E',label:'Standard CAD'},
   ],
 };
 // LOGIN
