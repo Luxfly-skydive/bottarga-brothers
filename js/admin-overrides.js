@@ -348,7 +348,17 @@
 
       if (name)  { const el = root.querySelector('.product-name');  if (el) el.textContent = name; }
       if (desc)  { const el = root.querySelector('.product-desc');  if (el) el.textContent = desc; }
-      if (img && revealImages) { const el = root.querySelector('.product-img'); if (el) el.src = img; }
+      if (img && revealImages) {
+        const el = root.querySelector('.product-img');
+        if (el) el.src = img;
+        // Keep BB_GALLERIES in sync so gallery nav arrows don't revert to the original image.
+        // BB_buildGallery's go() uses a closure over the same array reference, so mutating
+        // index 0 here means go(0) will use the KV-saved image instead of the original URL.
+        const galleryPid = key.replace(/_/g, '-'); // e.g. 'sardinian_gold' → 'sardinian-gold'
+        if (window.BB_GALLERIES && window.BB_GALLERIES[galleryPid]) {
+          window.BB_GALLERIES[galleryPid][0] = img;
+        }
+      }
 
       if (badge !== undefined) {
         let badgeEl = root.querySelector('.product-badge');
